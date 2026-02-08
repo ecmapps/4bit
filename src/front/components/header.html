@@ -1,0 +1,55 @@
+<style>
+  .navbar-custom {
+    background: linear-gradient(90deg, #61D6EA 0%, #3B4D78 13%, #302657 100%);
+    padding: 0.8rem 1.5rem;
+  }
+  /* REMOVE NAVBAR-BRAND WHEN LOGO IS ADDED */
+  .navbar-brand { 
+    color: white !important;
+    font-weight: bold;
+    font-size: 1.7rem;
+  }
+  .nav-link {
+    color: white !important;
+    font-weight: 500;
+    padding: 0.5rem 1.4rem !important;
+  }
+  .nav-link:hover {
+    background: rgba(255,255,255,0.18);
+    border-radius: 6px;
+  }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-custom" data-bs-theme="dark">
+  <div class="container-fluid">
+
+    <!-- Logo placeholder (replace this later) -->
+    <img src="assets/Logo_4bit_white.webp" alt="4bit logo" style="height: 50px;width: auto;">
+
+    <!-- Mobile toggler -->
+    <button class="navbar-toggler light" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarContent" aria-controls="navbarContent" 
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Centered navigation links -->
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav flex-grow-1 justify-content-center">
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="#">Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#valores">Sobre Nosotros</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#footer">Contáctenos</a>
+        </li>
+      </ul>
+
+      <!-- Optional: empty space on the right to balance layout -->
+      <div class="ms-auto d-none d-lg-block" style="width: 120px;"></div>
+    </div>
+
+  </div>
+</nav>
