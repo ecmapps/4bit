@@ -14,6 +14,6 @@ function injectHTML(url,tag){
     })
 } 
 document.addEventListener('DOMContentLoaded', (e) => {
-    injectHTML('src/front/components/header.html','header')
-    injectHTML('src/front/components/footer.html','footer')
+    injectHTML('/src/front/components/header.html','header')
+    injectHTML('/src/front/components/footer.html','footer')
 })
