@@ -1,0 +1,25 @@
+{
+  "name": "4bit",
+  "version": "1.0.0",
+  "description": "Proyecto Curso Programacion Web Avanzada",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sass": "sass src/front/scss:src/front/css",
+    "sass:watch": "sass --watch src/front/scss:src/front/css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ecmapps/4bit.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ecmapps/4bit/issues"
+  },
+  "homepage": "https://github.com/ecmapps/4bit#readme",
+  "devDependencies": {
+    "sass": "^1.97.3"
+  }
+}

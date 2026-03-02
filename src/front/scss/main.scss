@@ -1,0 +1,75 @@
+@import 'variables';
+@import 'mixins';
+@import 'components/header';
+@import 'components/footer';
+@import 'components/buttons';
+
+// Hero Section
+.mission-gradient {
+  background: linear-gradient(135deg, #1e1b4b, #312e81);
+  color: white;
+}
+
+.feature-card:hover {
+  transform: translateY(-0.5rem);
+  transition: transform 0.3s ease;
+}
+
+.hero-container {
+  height: 450px;
+
+  @media (min-width: 992px) {
+    height: 650px;
+  }
+
+  @media (min-width: 1200px) {
+    height: 750px;
+  }
+
+  @media (min-width: 1400px) {
+    height: 850px;
+  }
+}
+
+// Objetivos Section
+#objetivos {
+  background-image: url('assets/BG_General.webp');
+  background-size: cover;
+  padding: 3rem 0;
+
+  .objective-card {
+    background: linear-gradient(90deg, #00000000, #29109998);
+    border-radius: 1rem;
+    padding: 1.5rem;
+  }
+}
+
+// Valores Section
+#valores {
+  background-color: white;
+  padding: 3rem 0;
+
+  h2 {
+    color: #8B5CF6;
+  }
+
+  .valores-card {
+    background: linear-gradient(90deg, #419BBB, #243363);
+    border: 0;
+    color: white;
+
+    .card-body {
+      text-align: center;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    img {
+      height: 125px;
+      width: auto;
+      object-fit: contain;
+    }
+  }
+}
