@@ -1,0 +1,36 @@
+// Botón gradiente principal
+.btn-grad-primary {
+    @include btn($primary-gradient);
+  }
+  
+  // Botón gradiente secundaria
+  .btn-grad-secondary {
+    @include btn($secondary-gradient);
+  }
+  
+  // Tamaños opcionales
+  .btn-sm {
+    padding: .45rem .7rem;
+    font-size: .82rem;
+    border-radius: 10px;
+  }
+  
+  .btn-xs {
+    padding: .35rem .55rem;
+    font-size: .78rem;
+    border-radius: 10px;
+  }
+  
+  // Botón “ghost” (por si ocupás íconos, cerrar modal, etc.)
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid $border;
+    color: $ink;
+    border-radius: 10px;
+    padding: .5rem .7rem;
+    font-weight: 700;
+    cursor: pointer;
+  
+    &:hover { filter: brightness(.98); }
+    &:focus-visible { outline: none; box-shadow: $focus-ring; }
+  }

@@ -1,0 +1,41 @@
+//Gradientes de color
+$primary-gradient: linear-gradient(90deg, #61D6EA 0%, #3B4D78 13%, #302657 100%);
+$secondary-gradient: linear-gradient(90deg, #61D6EA 0%, #190E44 100%);
+
+$text-white: #fff;
+$font-weight-bold: 500;
+
+//----COLORES BASE----
+
+//Background
+$bg-page: #f3f4f6; //Fondo
+$panel-bg: #ffffff; //Paneles
+
+//Texto
+$ink: #111827; //Principal
+$muted: #6b7280; //Secundario
+
+//Borde
+$border: #e5e7eb; 
+
+//Estado Positivo
+$success: #22c55e;
+$success-soft: #dcfce7;
+
+//Estado Activo
+$active: #60a5fa;
+$active-soft: #dbeafe;
+
+//Estado Activo
+$error: #c41c32;
+$error-soft: rgb(252, 201, 205);
+
+//Bordes Redondeados
+$radius-lg: 18px;
+$radius-md: 14px;
+
+//Sombras
+$shadow-soft: 0 10px 25px rgba(0,0,0,.08);
+
+//Efecto focus
+$focus-ring: 0 0 0 3px rgba(97, 214, 234, .35);
