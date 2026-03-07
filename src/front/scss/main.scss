@@ -1,8 +1,11 @@
-@import 'variables';
-@import 'mixins';
-@import 'components/header';
-@import 'components/footer';
-@import 'components/buttons';
+@import "variables";
+@import "mixins";
+
+@import "components/buttons";
+@import "components/header";
+@import "components/footer";
+
+@import "pedidos";
 
 // Hero Section
 .mission-gradient {
