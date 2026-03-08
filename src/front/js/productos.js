@@ -1,6 +1,6 @@
-export async function fetchData(){
+export async function Productos(){
     try {
-        const response = await fetch('/productos.json');
+        const response = await fetch('/assets/productos.json');
         if(!response.ok){
             throw new Error(`Error HTTP: ${response.status}`,response.statusText);
         }
