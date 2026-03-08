@@ -12,74 +12,36 @@
   <link rel="stylesheet" href="../css/main.css" />
   <title>Mis Pedidos | 4Bit</title>
   <script src="../js/main.js" defer></script>
+  <script type="module" src="../js/pedidos.js" defer></script>
 </head>
 
 <body>
   <div id="header"></div>
   <div id="carrito"></div>
 
-  <!-- Body -->
   <div class="page-pedidos">
-    <!-- Buscador - Se podría incluir con el header creo...-->
     <div class="searchbar">
-      <input class="search" type="search" placeholder="Buscar" />
+      <input id="searchPedidos" class="search" type="search" placeholder="Buscar" />
     </div>
 
-    <!-- GRID PRINCIPAL -->
     <main class="pedidos-grid">
       <!-- IZQUIERDA: LISTA -->
       <section class="pedidos-list">
         <div class="title">Mis Compras</div>
-
-        <!-- Card pedido #1-->
-        <article class="pedido-card">
-          <div>
-            <div class="pedido-id">Pedido #10234</div>
-            <div class="meta">
-              Fecha: 04/01/2026<br />
-              Total: ₡6.985,41
-            </div>
-          </div>
-
-          <div style="display:grid; gap:.5rem; justify-items:end;">
-            <span class="badge-adquirido">ADQUIRIDO</span>
-            <button class="btn-grad-secondary btn-sm" type="button">
-              Ver Detalle
-            </button>
-          </div>
-        </article>
-
-        <!-- Card pedido #2 -->
-        <article class="pedido-card">
-          <div>
-            <div class="pedido-id">Pedido #10233</div>
-            <div class="meta">
-              Fecha: 02/01/2026<br />
-              Total: ₡3.985,41
-            </div>
-          </div>
-
-          <div style="display:grid; gap:.5rem; justify-items:end;">
-            <span class="badge-activo">ACTIVO</span>
-            <button class="btn-grad-secondary btn-sm" type="button">
-              Ver Detalle
-            </button>
-          </div>
-        </article>
+        <div id="pedidos-lista"></div>
       </section>
 
       <!-- DERECHA: DETALLE -->
-      <section class="pedido-detail">
+      <section class="pedido-detail" id="pedido-detail">
         <div class="header">
-          <h2>Pedido #10234</h2>
+          <h2>Pedido #00000</h2>
         </div>
 
         <div class="detail-meta">
-          <span class="date">Fecha: 04/01/2026</span>
-          <span class="badge-adquirido">ADQUIRIDO</span>
+          <span class="date">Fecha: --/--/----</span>
+          <span class="badge-activo">ACTIVO</span>
         </div>
 
-        <!-- Indicadores del proceso -->
         <div class="steps">
           <div class="step done">
             <div class="dot">✓</div>
@@ -101,50 +63,12 @@
 
         <div class="box">
           <div class="section-title">Detalle del Pedido</div>
+          <div id="pedido-items"></div>
 
-          <!-- Primer Item -->
-          <div class="item">
-            <div class="thumb">
-              <img src="/assets/Logo_4bit.webp" alt="Windows 11" /> <!-- Falta cargar las imágenes de referencia -->
-            </div>
-
-            <div>
-              <div class="name">Windows 11 Pro Retail CD Key</div>
-              <div class="desc">2.735,95 CRC</div>
-            </div>
-
-            <div class="actions">
-              <button class="btn-grad-secondary btn-xs" type="button">
-                Descargar
-              </button>
-              <span class="badge-adquirido">ADQUIRIDO</span>
-            </div>
-          </div>
-
-          <!-- Segundo Item -->
-          <div class="item">
-            <div class="thumb">
-              <img src="/assets/Logo_4bit.webp" alt="Office 2024" /> <!-- Falta cargar las imágenes de referencia -->
-            </div>
-
-            <div>
-              <div class="name">Microsoft Office 2024 Standard</div>
-              <div class="desc">4.249,46 CRC</div>
-            </div>
-
-            <div class="actions">
-              <button class="btn-grad-secondary btn-xs" type="button">
-                Descargar
-              </button>
-              <span class="badge-activo">ACTIVO</span>
-            </div>
-          </div>
-
-          <!-- Totales -->
-          <div class="totals">
+          <div class="totals" id="pedido-totals">
             <div class="row">
               <span>Subtotal</span>
-              <span>6.985,41 CRC</span>
+              <span>0 CRC</span>
             </div>
             <div class="row muted">
               <span>Envío</span>
@@ -152,7 +76,7 @@
             </div>
             <div class="row total">
               <span>Total</span>
-              <span>6.985,41 CRC</span>
+              <span>0 CRC</span>
             </div>
           </div>
         </div>
