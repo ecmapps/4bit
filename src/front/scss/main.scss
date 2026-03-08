@@ -1,13 +1,16 @@
-@import 'variables';
-@import 'mixins';
-@import 'components/header';
-@import 'components/footer';
-@import 'components/buttons';
+@import "variables";
+@import "mixins";
+
+@import "components/buttons";
+@import "components/header";
+@import "components/footer";
+
+@import "pedidos";
 
 // Hero Section
 .mission-gradient {
   background: linear-gradient(135deg, #1e1b4b, #312e81);
-  color: white;
+  color:white;
 }
 
 .feature-card:hover {
@@ -16,20 +19,27 @@
 }
 
 .hero-container {
-  height: 450px;
+    border-radius: 15px 15px 0 0;
+    height: 450px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    img{
+        height: max-content;
+    }
+    @media (min-width: 992px) {
+        height: 650px;
+    }
 
-  @media (min-width: 992px) {
-    height: 650px;
-  }
+    @media (min-width: 1200px) {
+        height: 750px;
+    }
 
-  @media (min-width: 1200px) {
-    height: 750px;
-  }
-
-  @media (min-width: 1400px) {
-    height: 850px;
-  }
+    @media (min-width: 1400px) {
+        height: 850px;
+    }
 }
+
 
 // Objetivos Section
 #objetivos {
@@ -72,5 +82,7 @@
       object-fit: contain;
     }
   }
+
 }
 @import 'components/producto';
+

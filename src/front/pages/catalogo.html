@@ -11,7 +11,27 @@
     <div id="header"></div>
     <div id="carrito"></div>
 
-    <!-- Body -->
+    <div>
+        <h1 class="text-center my-4">Catálogo de Productos</h1>
+        <div id="catalogo" class="row row-cols-1 row-cols-md-3 g-4">
+            <!-- Aquí se cargarán los productos dinámicamente -->
+            <script type="module" defer>
+                import { Productos } from '/src/front/js/productos.js';
+                const catalogoDiv = document.getElementById('catalogo');
+                const catalogo = document.getElementById('catalogo');
+                Productos().then(data=>{
+                    data.productos.forEach(producto => {
+                        const elemento = document.createElement('div');
+                        elemento.innerHTML = `
+                            <strong>${producto.nombre}</strong><br>
+                            Precio: ${producto.precio} CRC<br>
+                            Plataforma: ${Array.isArray(producto.sistema_operativo) ? producto.sistema_operativo.join(', ') : producto.sistema_operativo}`;
+                        catalogo.appendChild(elemento);
+                    });
+                })
+            </script>
+        </div>
+    </div>
 
 
     <div id="footer"></div>
