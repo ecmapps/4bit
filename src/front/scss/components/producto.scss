@@ -1,0 +1,253 @@
+@import '../variables';
+
+// ── Search Bar ──
+.search-bar {
+    background: linear-gradient(90deg, #7c6dba, #5a4d99);
+    padding: 0.5rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    label {
+        color: $text-white;
+        font-weight: $font-weight-bold;
+        font-size: 1rem;
+    }
+
+    input {
+        height: 28px;
+        max-width: 320px;
+        border: none;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.25);
+        color: $text-white;
+        padding: 0 0.75rem;
+        font-size: 0.875rem;
+        outline: none;
+
+        &::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+    }
+
+    .wallet {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: $text-white;
+        font-weight: $font-weight-bold;
+
+        .wallet-icon {
+            width: 26px;
+            height: 26px;
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+    }
+}
+
+// ── Product Section ──
+.product-section {
+
+    .product-card {
+        background: #231d4a;
+        border-radius: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 2.5rem;
+        padding: 2rem;
+
+        .product-image {
+            flex-shrink: 0;
+            width: 360px;
+            height: 300px;
+            border-radius: 1rem;
+            overflow: hidden;
+            background: linear-gradient(145deg, #0a84c8 0%, #0353a4 40%, #1a0a3d 100%);
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            padding: 1.5rem;
+
+            &::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background:
+                    radial-gradient(ellipse 60% 60% at 50% 40%, rgba(97, 214, 234, 0.35) 0%, transparent 70%),
+                    radial-gradient(ellipse 80% 50% at 30% 70%, rgba(59, 77, 120, 0.6) 0%, transparent 60%);
+            }
+
+            svg {
+                position: relative;
+                z-index: 1;
+                width: 72px;
+                height: 72px;
+                fill: $text-white;
+                filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5));
+            }
+
+            .win-label {
+                position: absolute;
+                bottom: 1.5rem;
+                right: 1.5rem;
+                font-size: 2rem;
+                font-weight: 700;
+                color: $text-white;
+                text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+                z-index: 1;
+            }
+        }
+
+        .product-info {
+            flex: 1;
+            text-align: center;
+
+            h1 {
+                font-size: 1.75rem;
+                font-weight: 700;
+                color: $text-white;
+                margin-bottom: 0.75rem;
+            }
+
+            .description {
+                font-size: 0.875rem;
+                color: rgba(255, 255, 255, 0.7);
+                line-height: 1.6;
+                margin-bottom: 1.25rem;
+            }
+
+            .price {
+                font-size: 2.25rem;
+                font-weight: 700;
+                color: $text-white;
+                margin-bottom: 1.25rem;
+            }
+        }
+    }
+}
+
+// ── Quantity ──
+.quantity-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.75rem;
+
+    .qty-btn {
+        width: 34px;
+        height: 34px;
+        background: #1a1535;
+        border: 1.5px solid rgba(255, 255, 255, 0.3);
+        color: $text-white;
+        font-size: 1.2rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s, border-color 0.2s;
+
+        &:first-child { border-radius: 6px 0 0 6px; }
+        &:last-child  { border-radius: 0 6px 6px 0; }
+        &:hover       { background: #8B5CF6; border-color: #8B5CF6; }
+    }
+
+    .qty-input {
+        width: 48px;
+        height: 34px;
+        background: #1a1535;
+        border: 1.5px solid rgba(255, 255, 255, 0.3);
+        border-left: none;
+        border-right: none;
+        color: $text-white;
+        text-align: center;
+        font-size: 1rem;
+        font-weight: 600;
+
+        &:focus { outline: none; }
+    }
+}
+
+// ── Buttons ──
+.btn-comprar {
+    padding: 0.65rem 1.75rem;
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+    border: none;
+    border-radius: 8px;
+    color: $text-white;
+    font-size: 1rem;
+    font-weight: $font-weight-bold;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+
+    &:hover { opacity: 0.9; transform: translateY(-1px); }
+}
+
+.btn-carrito {
+    padding: 0.65rem 1.75rem;
+    background: linear-gradient(135deg, #3B4D78, #302657);
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+    color: $text-white;
+    font-size: 1rem;
+    font-weight: $font-weight-bold;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+
+    &:hover { opacity: 0.9; transform: translateY(-1px); }
+}
+
+// ── Tabs ──
+.product-tabs {
+    background: linear-gradient(90deg, #302657 0%, #3B4D78 100%);
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+    padding: 0.85rem 0;
+
+    .tab-link {
+        font-weight: $font-weight-bold;
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        padding-bottom: 2px;
+        border-bottom: 2px solid transparent;
+        transition: color 0.2s, border-color 0.2s;
+
+        &:hover,
+        &.active {
+            color: $text-white;
+            border-bottom-color: #61D6EA;
+        }
+    }
+}
+
+// ── Protected Banner ──
+.protected-banner {
+    background: linear-gradient(135deg, #302657 0%, #7c3aed 50%, #ec4899 100%);
+    padding: 3.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+
+    svg {
+        width: 80px;
+        height: 80px;
+        fill: none;
+        stroke: rgba(255, 255, 255, 0.9);
+        stroke-width: 2.5;
+        flex-shrink: 0;
+    }
+
+    h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: $text-white;
+        letter-spacing: 1px;
+    }
+}
