@@ -145,44 +145,93 @@
     align-items: center;
     gap: .8rem;
     margin-bottom: .8rem;
-
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  
     .thumb {
-      width: 64px; height: 64px;
+      width: 64px;
+      height: 64px;
       border-radius: 12px;
-      background: #eef2ff;
+      background: linear-gradient(180deg, #eef2ff 0%, #f8fafc 100%);
       display: grid;
       place-items: center;
       overflow: hidden;
-
-      img { width: 100%; height: 100%; object-fit: cover; }
+      border: 1px solid rgba(0, 0, 0, 0.06);
+  
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: .35rem;
+        display: block;
+      }
     }
-
-    .name { font-weight: 900; margin-bottom: .15rem; }
-    .desc { color: $muted; font-size: .82rem; line-height: 1.2; }
-
+  
+    .name {
+      font-weight: 900;
+      margin-bottom: .15rem;
+    }
+  
+    .desc {
+      color: $muted;
+      font-size: .82rem;
+      line-height: 1.2;
+    }
+  
     .actions {
       display: grid;
       gap: .45rem;
       justify-items: end;
-
+  
       .badge-activo { @include pill($active-soft, #2563eb); }
       .badge-adquirido { @include pill($success-soft, $success); }
     }
   }
 
   .totals {
-    margin-top: .9rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #ffffff 0%, #f7f8fc 100%);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
     display: grid;
-    gap: .35rem;
-
+    gap: .75rem;
+  
     .row {
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
       color: $ink;
       font-weight: 800;
-
-      &.muted { color: $muted; font-weight: 700; }
-      &.total { font-size: 1.05rem; }
+      font-size: .95rem;
+  
+      span:last-child {
+        text-align: right;
+      }
+  
+      &.muted {
+        color: $muted;
+        font-weight: 700;
+        font-size: .9rem;
+        padding-bottom: .6rem;
+        border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
+      }
+  
+      &.total {
+        margin-top: .2rem;
+        padding-top: .75rem;
+        border-top: 2px solid rgba(0, 0, 0, 0.08);
+        font-size: 1.2rem;
+        font-weight: 900;
+  
+        span:last-child {
+          @include gradient-bg($primary-gradient);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+        }
+      }
     }
   }
 }
