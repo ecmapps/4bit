@@ -1,4 +1,4 @@
-@import "variables";
+@import "_variables";
 @import "mixins";
 
 @import "components/buttons";
@@ -6,6 +6,7 @@
 @import "components/footer";
 
 @import "pedidos";
+@import "catalogo";
 
 // Hero Section
 .mission-gradient {
