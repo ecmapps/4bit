@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/main.css">
+    <title>Registro | 4Bit</title>
+    <script src="../js/main.js" defer></script>
+</head>
+<body class="d-flex flex-column min-vh-100" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);">
+
+    <div id="header"></div>
+
+    <!-- Auth Container -->
+    <div class="flex-grow-1 d-flex align-items-center justify-content-center px-3">
+        <div class="w-100" style="max-width: 450px;">
+
+            <!-- Register Card -->
+            <div class="card border-0 shadow-lg" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
+                <div class="card-body p-5">
+
+                    <!-- Logo -->
+                    <div class="text-center mb-4">
+                        <img src="/assets/Logo_4bit.webp" alt="4bit logo" style="height: 60px; width: auto;">
+                    </div>
+
+                    <!-- Title -->
+                    <h2 class="text-center fw-bold mb-1" style="color: #312e81;">Crear Cuenta</h2>
+                    <p class="text-center text-muted mb-4">Únete a la comunidad 4Bit</p>
+
+                    <!-- Form -->
+                    <form id="register-form">
+                        <!-- Full Name -->
+                        <div class="mb-3">
+                            <label for="fullname" class="form-label fw-bold" style="color: #111827;">Nombre Completo</label>
+                            <input type="text" class="form-control form-control-lg" id="fullname" placeholder="Juan Pérez" required>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="register-email" class="form-label fw-bold" style="color: #111827;">Email</label>
+                            <input type="email" class="form-control form-control-lg" id="register-email" placeholder="tu@email.com" required>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label for="register-password" class="form-label fw-bold" style="color: #111827;">Contraseña</label>
+                            <input type="password" class="form-control form-control-lg" id="register-password" placeholder="••••••••" required>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="mb-4">
+                            <label for="confirm-password" class="form-label fw-bold" style="color: #111827;">Confirmar Contraseña</label>
+                            <input type="password" class="form-control form-control-lg" id="confirm-password" placeholder="••••••••" required>
+                        </div>
+
+                        <!-- Terms -->
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="terms" required style="cursor: pointer;">
+                            <label class="form-check-label" for="terms" style="color: #6b7280; cursor: pointer;">
+                                Acepto los <a href="#" class="text-decoration-none" style="color: #8B5CF6;">términos y condiciones</a>
+                            </label>
+                        </div>
+
+                        <!-- Register Button -->
+                        <button type="submit" class="btn btn-lg w-100 fw-bold text-white rounded-2" style="background: linear-gradient(90deg, #61D6EA 0%, #3B4D78 13%, #302657 100%);">
+                            CREAR CUENTA
+                        </button>
+                    </form>
+
+                    <!-- Login Link -->
+                    <p class="text-center mt-4" style="color: #6b7280;">
+                        ¿Ya tienes cuenta? 
+                        <a href="login.html" class="text-decoration-none fw-bold" style="color: #8B5CF6;">Inicia sesión</a>
+                    </p>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="footer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script type="module">
+        import { auth } from '../js/auth.js';
+
+        // REGISTRO
+        document.getElementById('register-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const pwd = document.getElementById('register-password').value;
+            const confirm = document.getElementById('confirm-password').value;
+            
+            if (pwd !== confirm) {
+                alert('Las contraseñas no coinciden');
+                return;
+            }
+            
+            try {
+                const fullname = document.getElementById('fullname').value;
+                const email = document.getElementById('register-email').value;
+                const user = auth.register(fullname, email, pwd);
+                
+                alert(`¡Bienvenido/a ${user.fullname}! Tu cuenta ha sido creada.`);
+                
+                // Limpiar formulario y redirigir
+                document.getElementById('register-form').reset();
+                setTimeout(() => {
+                    window.location.href = '/src/front/pages/inicio.html';
+                }, 1500);
+            } catch (error) {
+                alert('Error al registrar: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

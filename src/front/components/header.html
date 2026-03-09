@@ -3,7 +3,6 @@
     background: linear-gradient(90deg, #61D6EA 0%, #3B4D78 13%, #302657 100%);
     padding: 0.8rem 1.5rem;
   }
-  /* REMOVE NAVBAR-BRAND WHEN LOGO IS ADDED */
   .navbar-brand { 
     color: white !important;
     font-weight: bold;
@@ -18,13 +17,22 @@
     background: rgba(255,255,255,0.18);
     border-radius: 6px;
   }
+  .user-info {
+    color: white;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
 </style>
 
 <nav class="navbar navbar-expand-lg navbar-custom" data-bs-theme="dark">
   <div class="container-fluid">
 
-    <!-- Logo placeholder (replace this later) -->
-    <img src="/assets/Logo_4bit_white.webp" alt="4bit logo" style="height: 50px;width: auto;">
+    <!-- Logo -->
+    <a href="/" class="navbar-brand">
+      <img src="/assets/Logo_4bit_white.webp" alt="4bit logo" style="height: 50px; width: auto;">
+    </a>
 
     <!-- Mobile toggler -->
     <button class="navbar-toggler light" type="button" data-bs-toggle="collapse"
@@ -33,23 +41,52 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Centered navigation links -->
+    <!-- Navigation -->
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav flex-grow-1 justify-content-center">
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="#">Inicio</a>
+          <a class="nav-link" aria-current="page" href="/">Inicio</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#valores">Sobre Nosotros</a>
+          <a class="nav-link" href="/#valores">Sobre Nosotros</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#footer">Contáctenos</a>
+          <a class="nav-link" href="/#footer">Contáctenos</a>
         </li>
       </ul>
 
-      <!-- Optional: empty space on the right to balance layout -->
-      <div class="ms-auto d-none d-lg-block" style="width: 120px;"></div>
+      <!-- User Info / Login -->
+      <div id="user-section" class="ms-auto"></div>
     </div>
 
   </div>
 </nav>
+
+<script type="module">
+  import { auth } from '/src/front/js/auth.js';
+
+  function renderUserSection() {
+    const userSection = document.getElementById('user-section');
+    const activeUser = auth.getActiveUser();
+
+    if (activeUser) {
+      userSection.innerHTML = `
+        <div class="user-info">
+          <span>👤 ${activeUser.fullname}</span>
+          <button onclick="logout()" class="btn btn-sm btn-outline-light">Logout</button>
+        </div>
+      `;
+    } else {
+      userSection.innerHTML = `
+        <a href="/src/front/pages/login.html" class="btn btn-sm btn-outline-light">Login</a>
+      `;
+    }
+  }
+
+  window.logout = function() {
+    auth.logout();
+    window.location.href = '/';
+  }
+
+  renderUserSection();
+</script>

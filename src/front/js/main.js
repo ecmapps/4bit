@@ -1,19 +1,25 @@
-function injectHTML(url,tag){
+function injectHTML(url, tag) {
     fetch(url)
-    .then(response => {
-        if(!response.ok){
-            throw new Error('HTTP error',response.status)
-        }
-        return response.text();
-    })
-    .then(htmlString => {
-        document.getElementById(tag).innerHTML = htmlString;   
-    })
-    .catch(error => {
-        console.error('Error fetching HTML:', error);
-    })
-} 
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('HTTP error', response.status)
+            }
+            return response.text();
+        })
+        .then(htmlString => {
+            document.getElementById(tag).innerHTML = htmlString;
+        })
+        .catch(error => {
+            console.error('Error fetching HTML:', error);
+        })
+}
+
 document.addEventListener('DOMContentLoaded', (e) => {
-    injectHTML('/src/front/components/header.html','header')
-    injectHTML('/src/front/components/footer.html','footer')
+    injectHTML('/src/front/components/header.html', 'header')
+    injectHTML('/src/front/components/footer.html', 'footer')
 })
+
+// Recargar header si el usuario cambió
+window.addEventListener('storage', () => {
+    injectHTML('/src/front/components/header.html', 'header')
+});
