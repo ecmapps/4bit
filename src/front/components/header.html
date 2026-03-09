@@ -1,37 +1,9 @@
-<style>
-  .navbar-custom {
-    background: linear-gradient(90deg, #61D6EA 0%, #3B4D78 13%, #302657 100%);
-    padding: 0.8rem 1.5rem;
-  }
-  .navbar-brand { 
-    color: white !important;
-    font-weight: bold;
-    font-size: 1.7rem;
-  }
-  .nav-link {
-    color: white !important;
-    font-weight: 500;
-    padding: 0.5rem 1.4rem !important;
-  }
-  .nav-link:hover {
-    background: rgba(255,255,255,0.18);
-    border-radius: 6px;
-  }
-  .user-info {
-    color: white;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-</style>
-
 <nav class="navbar navbar-expand-lg navbar-custom" data-bs-theme="dark">
   <div class="container-fluid">
 
     <!-- Logo -->
     <a href="/" class="navbar-brand">
-      <img src="/assets/Logo_4bit_white.webp" alt="4bit logo" style="height: 50px; width: auto;">
+      <img src="/assets/Logo_4bit_white.webp" alt="4bit logo" class="logo">
     </a>
 
     <!-- Mobile toggler -->
@@ -61,32 +33,3 @@
 
   </div>
 </nav>
-
-<script type="module">
-  import { auth } from '/src/front/js/auth.js';
-
-  function renderUserSection() {
-    const userSection = document.getElementById('user-section');
-    const activeUser = auth.getActiveUser();
-
-    if (activeUser) {
-      userSection.innerHTML = `
-        <div class="user-info">
-          <span>👤 ${activeUser.fullname}</span>
-          <button onclick="logout()" class="btn btn-sm btn-outline-light">Logout</button>
-        </div>
-      `;
-    } else {
-      userSection.innerHTML = `
-        <a href="/src/front/pages/login.html" class="btn btn-sm btn-outline-light">Login</a>
-      `;
-    }
-  }
-
-  window.logout = function() {
-    auth.logout();
-    window.location.href = '/';
-  }
-
-  renderUserSection();
-</script>

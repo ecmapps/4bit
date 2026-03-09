@@ -269,3 +269,19 @@
     }
   }
 }
+
+.cart-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.55);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1rem;
+
+  &.is-open {
+    display: flex;
+  }
+}

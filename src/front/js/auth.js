@@ -43,13 +43,19 @@ export class AuthManager {
   // Obtener usuario activo
   getActiveUser() {
     const storedUser = localStorage.getItem(this.storageKey);
-    return storedUser ? JSON.parse(storedUser) : null;
+    if (!storedUser) return null;
+  
+    const user = JSON.parse(storedUser);
+    return user.isActive ? user : null;
   }
 
   // Verificar si hay usuario activo
   isUserActive() {
-    return this.getActiveUser() !== null;
+    const user = this.getActiveUser();
+    return !!user && user.isActive === true;
   }
+
+  
 
   // Logout
   logout() {

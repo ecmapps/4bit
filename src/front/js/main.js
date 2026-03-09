@@ -1,25 +1,38 @@
-function injectHTML(url, tag) {
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('HTTP error', response.status)
-            }
-            return response.text();
-        })
-        .then(htmlString => {
-            document.getElementById(tag).innerHTML = htmlString;
-        })
-        .catch(error => {
-            console.error('Error fetching HTML:', error);
-        })
+import { initHeaderStore } from '/src/front/js/header-store.js';
+import { initCarrito } from '/src/front/js/carrito.js';
+
+function injectHTML(url, tag, callback) {
+  const element = document.getElementById(tag);
+  if (!element) return;
+
+  fetch(url)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(htmlString => {
+      element.innerHTML = htmlString;
+
+      if (typeof callback === 'function') {
+        callback();
+      }
+    })
+    .catch(error => {
+      console.error(`Error fetching ${url}:`, error);
+    });
 }
 
-document.addEventListener('DOMContentLoaded', (e) => {
-    injectHTML('/src/front/components/header.html', 'header')
-    injectHTML('/src/front/components/footer.html', 'footer')
-})
+document.addEventListener('DOMContentLoaded', () => {
+  injectHTML('/src/front/components/header.html', 'header');
+  injectHTML('/src/front/components/footer.html', 'footer');
+  injectHTML('/src/front/components/header-store.html', 'header-store', initHeaderStore);
+  injectHTML('/src/front/components/carrito-panel.html', 'carrito', initCarrito);
+});
 
-// Recargar header si el usuario cambió
 window.addEventListener('storage', () => {
-    injectHTML('/src/front/components/header.html', 'header')
+  injectHTML('/src/front/components/header.html', 'header');
+  injectHTML('/src/front/components/header-store.html', 'header-store', initHeaderStore);
+  initCarrito();
 });

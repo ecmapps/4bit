@@ -1,0 +1,75 @@
+<div class="cart-overlay" id="cart-panel">
+    <div class="cart-modal-box">
+      <section class="cart-panel">
+  
+        <div class="cart-header">
+          <div class="cart-header__brand">
+            <img src="/assets/Logo_4bit.webp" alt="Logo tienda">
+          </div>
+  
+          <h2>Carrito de Compras</h2>
+  
+          <button
+            class="cart-close btn-ghost"
+            id="close-cart-btn"
+            aria-label="Cerrar"
+            type="button">
+            ✕
+          </button>
+        </div>
+  
+        <div class="cart-grid">
+          <section class="cart-list">
+            <div class="title">Productos</div>
+  
+            <div id="cart-items">
+              <article class="cart-item">
+                <div class="info">
+                  <div class="name">Cargando carrito...</div>
+                  <div class="price">Espera un momento.</div>
+                </div>
+              </article>
+            </div>
+          </section>
+  
+          <aside class="cart-summary">
+            <div class="summary-box">
+              <div class="section-title">
+                Resumen del Pedido
+              </div>
+  
+              <div class="totals" id="cart-totals">
+                <div class="row">
+                  <span>Subtotal</span>
+                  <span>₡0.00</span>
+                </div>
+  
+                <div class="row muted">
+                  <span>Envío</span>
+                  <span>Calculado en el pago.</span>
+                </div>
+  
+                <div class="row total">
+                  <span>Total</span>
+                  <span>₡0.00</span>
+                </div>
+              </div>
+  
+              <button class="btn-grad-secondary cart-confirm" id="cart-confirm-btn" type="button">
+                Confirmar
+              </button>
+  
+              <div class="cart-secure">
+                <span>🛡 Compra 100% protegida</span>
+              </div>
+  
+              <div class="cart-payments">
+                <img src="/assets/visa.png" alt="Visa">
+                <img src="/assets/mastercard.png" alt="Mastercard">
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </div>
+  </div>

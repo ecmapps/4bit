@@ -1,13 +1,54 @@
-.sidebar{
+.sidebar {
     background-color: $bg-card;
-}
-.card{
-    height: 100%;
+    min-height: 100%;
+  }
+  
+  .catalogo-item {
     width: 330px;
-    img{
-        height: auto;
-        min-height: 200px;
-        width: 200px;
-        object-fit: contain;
+  }
+  
+  .card {
+    height: 100%;
+    width: 100%;
+    border-radius: $radius-md;
+    overflow: hidden;
+  
+    img {
+      height: 200px;
+      min-height: 200px;
+      width: 200px;
+      object-fit: contain;
+      margin-top: 1rem;
     }
-}
+  }
+  
+  #catalogo-resumen {
+    color: $ink;
+  }
+  
+  #plataformas .btn {
+    border-radius: 999px;
+  }
+
+  .sidebar {
+    background-color: $bg-card;
+  }
+  
+  .catalogo-item {
+    width: 330px;
+  }
+  
+  .card {
+    height: 100%;
+    width: 100%;
+  
+    img {
+      height: auto;
+      min-height: 200px;
+      width: 200px;
+      object-fit: contain;
+    }
+  }
+  .card-body {
+    min-height: 260px;
+  }

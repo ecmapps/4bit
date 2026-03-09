@@ -1,0 +1,36 @@
+.navbar-custom {
+    @include gradient-bg($primary-gradient);
+    padding: 0.8rem 1.5rem;
+  
+    .navbar-brand {
+      color: $text-white !important;
+      font-weight: 700;
+      font-size: 1.7rem;
+  
+      .logo {
+        height: 50px;
+        width: auto;
+        display: block;
+      }
+    }
+  
+    .nav-link {
+      color: $text-white !important;
+      font-weight: $font-weight-bold;
+      padding: 0.5rem 1.4rem !important;
+      border-radius: 6px;
+      transition: background 0.2s ease;
+  
+      &:hover {
+        background: rgba(255, 255, 255, 0.18);
+      }
+    }
+  
+    .user-info {
+      color: $text-white;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  }
