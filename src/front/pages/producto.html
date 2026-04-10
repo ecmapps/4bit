@@ -35,7 +35,7 @@
         <div class="d-flex gap-3 justify-content-center flex-wrap">
           <button class="btn-comprar" id="btn-comprar">Comprar Ahora</button>
           <button class="btn-carrito" id="btn-carrito">Agregar al carrito</button>
-          <a href="/src/front/html/catalogo.html" class="btn btn-outline-light">Volver al catálogo</a>
+          <a href="/src/front/pages/catalogo.html" class="btn btn-outline-light">Volver al catálogo</a>
         </div>
       </div>
 
@@ -68,11 +68,17 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
   <script type="module">
+    import { abrirCarrito, initCarrito } from '/src/front/js/carrito.js';
     import { Productos } from '/src/front/js/productos.js';
 
     const params = new URLSearchParams(window.location.search);
     const id = parseInt(params.get('id'));
 
+    window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    initCarrito();
+  }, 100);
+});
     let productoActual = null;
 
     function formatearCRC(valor) {
@@ -179,16 +185,22 @@
     });
 
     document.getElementById('btn-carrito')?.addEventListener('click', () => {
-      if (!productoActual) return;
-      const cantidad = parseInt(document.getElementById('qty').value) || 1;
-      agregarAlCarrito(productoActual, cantidad);
-    });
+  if (!productoActual) return;
+
+  const cantidad = parseInt(document.getElementById('qty').value) || 1;
+  agregarAlCarrito(productoActual, cantidad);
+
+  setTimeout(() => {
+    initCarrito();
+    abrirCarrito();
+  }, 50);
+});
 
     document.getElementById('btn-comprar')?.addEventListener('click', () => {
       if (!productoActual) return;
       const cantidad = parseInt(document.getElementById('qty').value) || 1;
       agregarAlCarrito(productoActual, cantidad);
-      window.location.href = '/src/front/html/carrito.html';
+      window.location.href = '/src/front/pages/carrito.html';
     });
   </script>
 </body>
