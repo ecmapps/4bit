@@ -122,22 +122,26 @@ function ordenarListado() {
 }
 
 function agregarAlCarrito(producto) {
-    const carritoGuardado = JSON.parse(localStorage.getItem('4bit_cart')) || [];
-  
-    const productoExistente = carritoGuardado.find(item => item.nombre === producto.nombre);
-  
-    if (productoExistente) {
-      productoExistente.cantidad += 1;
-    } else {
-      carritoGuardado.push({
-        ...producto,
-        cantidad: 1
-      });
-    }
-  
-    localStorage.setItem('4bit_cart', JSON.stringify(carritoGuardado));
-    alert(`"${producto.nombre}" fue agregado al carrito.`);
+  const carritoGuardado = JSON.parse(localStorage.getItem('4bit_cart')) || [];
+
+  const productoExistente = carritoGuardado.find(item => item.nombre === producto.nombre);
+
+  if (productoExistente) {
+    productoExistente.cantidad += 1;
+  } else {
+    carritoGuardado.push({
+      ...producto,
+      cantidad: 1
+    });
   }
+
+  localStorage.setItem('4bit_cart', JSON.stringify(carritoGuardado));
+  alert(`"${producto.nombre}" fue agregado al carrito.`);
+}
+
+function irADetalle(indexReal) {
+  window.location.href = `/src/front/pages/producto.html?id=${indexReal}`;
+}
 
 function renderizarCatalogo(lista) {
   if (!catalogoDiv) return;
@@ -155,9 +159,12 @@ function renderizarCatalogo(lista) {
     return;
   }
 
-  catalogoDiv.innerHTML = lista.map((producto, index) => {
+  catalogoDiv.innerHTML = lista.map((producto) => {
     const precioFinal = obtenerPrecioFinal(producto);
     const tieneDescuento = producto.precio_en_descuento !== null && producto.precio_en_descuento !== undefined;
+
+    // índice real dentro del arreglo original
+    const indexReal = productos.findIndex(p => p.nombre === producto.nombre);
 
     return `
       <div class="catalogo-item">
@@ -201,9 +208,21 @@ function renderizarCatalogo(lista) {
               }
             </p>
 
-            <button class="btn btn-warning mt-auto btn-agregar-carrito" type="button" data-index="${index}">
-              Agregar al carrito
-            </button>
+            <div class="mt-auto d-grid gap-2">
+              <button 
+                class="btn btn-outline-primary btn-ver-detalle" 
+                type="button" 
+                data-index="${indexReal}">
+                Ver detalle
+              </button>
+
+              <button 
+                class="btn btn-warning btn-agregar-carrito" 
+                type="button" 
+                data-index="${indexReal}">
+                Agregar al carrito
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -211,10 +230,19 @@ function renderizarCatalogo(lista) {
   }).join('');
 
   const botonesAgregar = catalogoDiv.querySelectorAll('.btn-agregar-carrito');
+  const botonesDetalle = catalogoDiv.querySelectorAll('.btn-ver-detalle');
 
-  botonesAgregar.forEach((boton, index) => {
+  botonesAgregar.forEach((boton) => {
     boton.addEventListener('click', () => {
-      agregarAlCarrito(lista[index]);
+      const index = Number(boton.dataset.index);
+      agregarAlCarrito(productos[index]);
+    });
+  });
+
+  botonesDetalle.forEach((boton) => {
+    boton.addEventListener('click', () => {
+      const index = Number(boton.dataset.index);
+      irADetalle(index);
     });
   });
 }

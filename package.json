@@ -20,6 +20,6 @@
   },
   "homepage": "https://github.com/ecmapps/4bit#readme",
   "devDependencies": {
-    "sass": "^1.97.3"
+    "sass": "^1.99.0"
   }
 }
