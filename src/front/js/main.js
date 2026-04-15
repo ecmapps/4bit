@@ -25,14 +25,12 @@ function injectHTML(url, tag, callback) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  injectHTML('/src/front/components/header.html', 'header');
   injectHTML('/src/front/components/footer.html', 'footer');
   injectHTML('/src/front/components/header-store.html', 'header-store', initHeaderStore);
   injectHTML('/src/front/components/carrito-panel.html', 'carrito', initCarrito);
 });
 
 window.addEventListener('storage', () => {
-  injectHTML('/src/front/components/header.html', 'header');
   injectHTML('/src/front/components/header-store.html', 'header-store', initHeaderStore);
   initCarrito();
 });
