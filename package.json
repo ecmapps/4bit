@@ -2,8 +2,10 @@
   "name": "4bit",
   "version": "1.0.0",
   "description": "Proyecto Curso Programacion Web Avanzada",
-  "main": "index.js",
+  "main": "server.js",
+  "type": "module",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "sass": "sass src/front/scss:src/front/css",
     "sass:watch": "sass --watch src/front/scss:src/front/css"
@@ -25,9 +27,13 @@
   "dependencies": {
     "chokidar": "^4.0.3",
     "detect-libc": "^2.1.2",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
     "immutable": "^5.1.5",
     "is-extglob": "^2.1.1",
     "is-glob": "^4.0.3",
+    "mongodb": "^6.21.0",
+    "mongoose": "^8.23.0",
     "node-addon-api": "^7.1.1",
     "picomatch": "^4.0.4",
     "readdirp": "^4.1.2",
