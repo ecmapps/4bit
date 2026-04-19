@@ -3,18 +3,22 @@ dotenv.config();
 
 import express from "express";
 import mongoose from "mongoose";
-import { connectDB } from "./src/config/db.js";
+import cors from "cors";
+import bcrypt from "bcryptjs";
 
+import { connectDB } from "./src/config/db.js";
 import Product from "./src/models/Product.js";
 import Category from "./src/models/Category.js";
+import User from "./src/models/User.js";
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-    res.send("API funcionando - VERSION NUEVA 123");
-  });
+  res.send("API funcionando - VERSION NUEVA 1435");
+});
 
 app.get("/test-db", async (req, res) => {
   try {
@@ -36,48 +40,35 @@ app.get("/test-db", async (req, res) => {
 });
 
 app.get("/test-insert-category", async (req, res) => {
-    try {
-      console.log("Entró a /test-insert-category");
-  
-      const category = await Category.findOneAndUpdate(
-        { slug: "ofimatica" },
-        {
-          nombre: "Ofimática",
-          slug: "ofimatica",
-          descripcion: "Categoría de prueba",
-          activa: true
-        },
-        {
-          new: true,
-          upsert: true,
-          runValidators: true
-        }
-      );
-  
-      console.log("Categoría creada/encontrada:", category);
-  
-      res.status(200).json({
-        ok: true,
-        message: "Categoría creada o encontrada correctamente",
-        category
-      });
-    } catch (error) {
-      console.error("Error en /test-insert-category:", error);
-      res.status(500).json({
-        ok: false,
-        message: "Error creando categoría",
-        error: error.message
-      });
-    }
-  });
+  try {
+    const category = await Category.findOneAndUpdate(
+      { slug: "ofimatica" },
+      {
+        nombre: "Ofimática",
+        slug: "ofimatica",
+        descripcion: "Categoría de prueba",
+        activa: true
+      },
+      {
+        new: true,
+        upsert: true,
+        runValidators: true
+      }
+    );
 
-  app.get("/ping-category-route", (req, res) => {
-    res.json({ ok: true, message: "La ruta de categoría existe" });
-  });
-
-  app.get("/routes-check", (req, res) => {
-    res.send("Servidor actualizado con rutas nuevas");
-  });
+    res.status(200).json({
+      ok: true,
+      message: "Categoría creada o encontrada correctamente",
+      category
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      message: "Error creando categoría",
+      error: error.message
+    });
+  }
+});
 
 app.get("/test-insert-product", async (req, res) => {
   try {
@@ -141,6 +132,107 @@ app.get("/collections", async (req, res) => {
     res.status(500).json({
       ok: false,
       message: "Error obteniendo colecciones",
+      error: error.message
+    });
+  }
+});
+
+/* =========================
+   AUTH - REGISTRO
+========================= */
+app.post("/api/auth/register", async (req, res) => {
+  try {
+    const { fullname, email, password } = req.body;
+
+    if (!fullname || !email || !password) {
+      return res.status(400).json({
+        ok: false,
+        message: "Todos los campos son obligatorios"
+      });
+    }
+
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+
+    if (existingUser) {
+      return res.status(409).json({
+        ok: false,
+        message: "El usuario ya existe"
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await User.create({
+      fullname,
+      email: email.toLowerCase(),
+      password: hashedPassword
+    });
+
+    res.status(201).json({
+      ok: true,
+      message: "Usuario registrado correctamente",
+      user: {
+        id: user._id,
+        fullname: user.fullname,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      message: "Error registrando usuario",
+      error: error.message
+    });
+  }
+});
+
+/* =========================
+   AUTH - LOGIN
+========================= */
+app.post("/api/auth/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        ok: false,
+        message: "Email y contraseña son obligatorios"
+      });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      return res.status(404).json({
+        ok: false,
+        message: "Usuario no encontrado"
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        ok: false,
+        message: "Contraseña incorrecta"
+      });
+    }
+
+    res.status(200).json({
+      ok: true,
+      message: "Inicio de sesión exitoso",
+      user: {
+        id: user._id,
+        fullname: user.fullname,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      message: "Error iniciando sesión",
       error: error.message
     });
   }
