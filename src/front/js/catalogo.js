@@ -1,4 +1,5 @@
 import { Productos } from './productos.js';
+import { agregarProductoAlCarrito } from './carrito.js';
 
 const catalogoDiv = document.getElementById('catalogo');
 const categoriasDiv = document.getElementById('categorias');
@@ -122,25 +123,11 @@ function ordenarListado() {
 }
 
 function agregarAlCarrito(producto) {
-  const carritoGuardado = JSON.parse(localStorage.getItem('4bit_cart')) || [];
-
-  const productoExistente = carritoGuardado.find(item => item.nombre === producto.nombre);
-
-  if (productoExistente) {
-    productoExistente.cantidad += 1;
-  } else {
-    carritoGuardado.push({
-      ...producto,
-      cantidad: 1
-    });
-  }
-
-  localStorage.setItem('4bit_cart', JSON.stringify(carritoGuardado));
-  alert(`"${producto.nombre}" fue agregado al carrito.`);
+  agregarProductoAlCarrito(producto, 1);
 }
 
-function irADetalle(indexReal) {
-  window.location.href = `/src/front/pages/producto.html?id=${indexReal}`;
+function irADetalle(productId) {
+  window.location.href = `/src/front/pages/producto.html?id=${productId}`;
 }
 
 function renderizarCatalogo(lista) {
@@ -162,9 +149,7 @@ function renderizarCatalogo(lista) {
   catalogoDiv.innerHTML = lista.map((producto) => {
     const precioFinal = obtenerPrecioFinal(producto);
     const tieneDescuento = producto.precio_en_descuento !== null && producto.precio_en_descuento !== undefined;
-
-    // índice real dentro del arreglo original
-    const indexReal = productos.findIndex(p => p.nombre === producto.nombre);
+    const productId = producto._id;
 
     return `
       <div class="catalogo-item">
@@ -212,14 +197,14 @@ function renderizarCatalogo(lista) {
               <button 
                 class="btn btn-outline-primary btn-ver-detalle" 
                 type="button" 
-                data-index="${indexReal}">
+                data-id="${productId}">
                 Ver detalle
               </button>
 
               <button 
                 class="btn btn-warning btn-agregar-carrito" 
                 type="button" 
-                data-index="${indexReal}">
+                data-id="${productId}">
                 Agregar al carrito
               </button>
             </div>
@@ -234,15 +219,16 @@ function renderizarCatalogo(lista) {
 
   botonesAgregar.forEach((boton) => {
     boton.addEventListener('click', () => {
-      const index = Number(boton.dataset.index);
-      agregarAlCarrito(productos[index]);
+      const id = boton.dataset.id;
+      const producto = productos.find(p => p._id === id);
+      if (producto) agregarAlCarrito(producto);
     });
   });
 
   botonesDetalle.forEach((boton) => {
     boton.addEventListener('click', () => {
-      const index = Number(boton.dataset.index);
-      irADetalle(index);
+      const id = boton.dataset.id;
+      irADetalle(id);
     });
   });
 }

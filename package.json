@@ -7,6 +7,8 @@
   "scripts": {
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.js",
+    "seed:products": "node ./src/seed/seedProducts.js",
     "sass": "sass src/front/scss:src/front/css",
     "sass:watch": "sass --watch src/front/scss:src/front/css"
   },
@@ -22,6 +24,7 @@
   },
   "homepage": "https://github.com/ecmapps/4bit#readme",
   "devDependencies": {
+    "nodemon": "^3.1.14",
     "sass": "^1.99.0"
   },
   "dependencies": {

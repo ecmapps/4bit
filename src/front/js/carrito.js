@@ -1,3 +1,5 @@
+import { getActiveUserId, requireActiveUser } from "./api-user.js";
+
 let carrito = [];
 
 function getCartElements() {
@@ -20,18 +22,27 @@ function obtenerPrecioFinal(producto) {
   return producto.precio_en_descuento ?? producto.precio ?? 0;
 }
 
-function cargarCarritoDesdeStorage() {
+async function cargarCarritoDesdeAPI() {
+  const userId = getActiveUserId();
+
+  if (!userId) {
+    carrito = [];
+    return;
+  }
+
   try {
-    const carritoGuardado = localStorage.getItem('4bit_cart');
-    carrito = carritoGuardado ? JSON.parse(carritoGuardado) : [];
+    const response = await fetch(`http://localhost:3000/api/cart/${userId}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Error cargando carrito");
+    }
+
+    carrito = data.cart?.items || [];
   } catch (error) {
-    console.error('Error leyendo carrito desde localStorage:', error);
+    console.error("Error leyendo carrito desde API:", error);
     carrito = [];
   }
-}
-
-function guardarCarritoEnStorage() {
-  localStorage.setItem('4bit_cart', JSON.stringify(carrito));
 }
 
 function calcularSubtotal() {
@@ -65,32 +76,77 @@ function renderTotales() {
   `;
 }
 
-function aumentarCantidad(index) {
-  if (!carrito[index]) return;
+async function aumentarCantidad(index) {
+  const userId = getActiveUserId();
+  if (!userId || !carrito[index]) return;
 
-  carrito[index].cantidad += 1;
-  guardarCarritoEnStorage();
-  renderCarrito();
+  const item = carrito[index];
+
+  await fetch(`http://localhost:3000/api/cart/${userId}/item/${item._id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      cantidad: item.cantidad + 1
+    })
+  });
+
+  await renderCarrito();
 }
 
-function disminuirCantidad(index) {
-  if (!carrito[index]) return;
+async function disminuirCantidad(index) {
+  const userId = getActiveUserId();
+  if (!userId || !carrito[index]) return;
 
-  if (carrito[index].cantidad > 1) {
-    carrito[index].cantidad -= 1;
+  const item = carrito[index];
+
+  if (item.cantidad > 1) {
+    await fetch(`http://localhost:3000/api/cart/${userId}/item/${item._id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        cantidad: item.cantidad - 1
+      })
+    });
   } else {
-    carrito.splice(index, 1);
+    await fetch(`http://localhost:3000/api/cart/${userId}/item/${item._id}`, {
+      method: "DELETE"
+    });
   }
 
-  guardarCarritoEnStorage();
-  renderCarrito();
+  await renderCarrito();
 }
 
-function renderCarrito() {
+function renderMensajeSinSesion() {
   const { cartItems } = getCartElements();
   if (!cartItems) return;
 
-  cargarCarritoDesdeStorage();
+  cartItems.innerHTML = `
+    <article class="cart-item">
+      <div class="info">
+        <div class="name">Debes iniciar sesión</div>
+        <div class="price">Inicia sesión para usar tu carrito personal.</div>
+      </div>
+    </article>
+  `;
+
+  renderTotales();
+}
+
+async function renderCarrito() {
+  const { cartItems } = getCartElements();
+  if (!cartItems) return;
+
+  if (!getActiveUserId()) {
+    carrito = [];
+    renderMensajeSinSesion();
+    return;
+  }
+
+  await cargarCarritoDesdeAPI();
 
   if (!carrito.length) {
     cartItems.innerHTML = `
@@ -151,7 +207,7 @@ function agregarEventosCantidad() {
   const { cartItems } = getCartElements();
   if (!cartItems || cartItems.dataset.eventsLoaded === 'true') return;
 
-  cartItems.addEventListener('click', (e) => {
+  cartItems.addEventListener('click', async (e) => {
     const button = e.target.closest('.qty-btn');
     if (!button) return;
 
@@ -159,11 +215,11 @@ function agregarEventosCantidad() {
     const action = button.dataset.action;
 
     if (action === 'plus') {
-      aumentarCantidad(index);
+      await aumentarCantidad(index);
     }
 
     if (action === 'minus') {
-      disminuirCantidad(index);
+      await disminuirCantidad(index);
     }
   });
 
@@ -174,8 +230,11 @@ function agregarEventoConfirmar() {
   const confirmBtn = document.getElementById('cart-confirm-btn');
   if (!confirmBtn || confirmBtn.dataset.eventsLoaded === 'true') return;
 
-  confirmBtn.addEventListener('click', () => {
-    cargarCarritoDesdeStorage();
+  confirmBtn.addEventListener('click', async () => {
+    const user = requireActiveUser();
+    if (!user) return;
+
+    await cargarCarritoDesdeAPI();
 
     if (!carrito.length) {
       alert('Tu carrito está vacío.');
@@ -186,6 +245,53 @@ function agregarEventoConfirmar() {
   });
 
   confirmBtn.dataset.eventsLoaded = 'true';
+}
+
+export async function agregarProductoAlCarrito(producto, cantidad = 1) {
+  const user = requireActiveUser();
+  if (!user) return;
+
+  try {
+    const response = await fetch(`http://localhost:3000/api/cart/${user.id || user._id}/add`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        productId: producto._id,
+        cantidad
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "No se pudo agregar al carrito");
+    }
+
+    alert(`"${producto.nombre}" fue agregado al carrito.`);
+    await renderCarrito();
+  } catch (error) {
+    console.error("Error agregando producto al carrito:", error);
+    alert("No se pudo agregar el producto al carrito.");
+  }
+}
+
+export async function obtenerCarritoActual() {
+  await cargarCarritoDesdeAPI();
+  return carrito;
+}
+
+export async function limpiarCarritoActual() {
+  const userId = getActiveUserId();
+  if (!userId) return;
+
+  await fetch(`http://localhost:3000/api/cart/${userId}/clear`, {
+    method: "DELETE"
+  });
+
+  carrito = [];
+  await renderCarrito();
 }
 
 export function abrirCarrito() {

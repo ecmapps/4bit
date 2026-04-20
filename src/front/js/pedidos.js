@@ -1,3 +1,5 @@
+import { getActiveUserId, requireActiveUser } from "./api-user.js";
+
 const pedidosLista = document.getElementById('pedidos-lista');
 const pedidoDetail = document.getElementById('pedido-detail');
 const searchInput = document.getElementById('searchPedidos');
@@ -20,10 +22,24 @@ function obtenerClaseBadge(estado) {
   return estado === 'adquirido' ? 'badge-adquirido' : 'badge-activo';
 }
 
-function cargarPedidosDesdeStorage() {
+async function cargarPedidosDesdeAPI() {
+  const userId = getActiveUserId();
+
+  if (!userId) {
+    pedidos = [];
+    pedidosFiltrados = [];
+    return;
+  }
+
   try {
-    const data = localStorage.getItem('4bit_orders');
-    pedidos = data ? JSON.parse(data) : [];
+    const response = await fetch(`http://localhost:3000/api/orders/${userId}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Error cargando pedidos");
+    }
+
+    pedidos = data.orders || [];
     pedidosFiltrados = [...pedidos];
   } catch (error) {
     console.error('Error cargando pedidos:', error);
@@ -32,8 +48,38 @@ function cargarPedidosDesdeStorage() {
   }
 }
 
+function renderSinSesion() {
+  if (!pedidosLista) return;
+
+  pedidosLista.innerHTML = `
+    <article class="pedido-card">
+      <div>
+        <div class="pedido-id">Debes iniciar sesión</div>
+        <div class="meta">Inicia sesión para ver tus pedidos.</div>
+      </div>
+    </article>
+  `;
+
+  if (pedidoDetail) {
+    pedidoDetail.innerHTML = `
+      <div class="header">
+        <h2>Sesión requerida</h2>
+      </div>
+      <div class="box">
+        <div class="section-title">Detalle del Pedido</div>
+        <p>Inicia sesión para ver tus compras.</p>
+      </div>
+    `;
+  }
+}
+
 function renderLista(lista) {
   if (!pedidosLista) return;
+
+  if (!getActiveUserId()) {
+    renderSinSesion();
+    return;
+  }
 
   pedidosLista.innerHTML = '';
 
@@ -194,7 +240,7 @@ function filtrarPedidos(texto) {
     const fecha = pedido.fecha.toLowerCase();
     const metodo = (pedido.metodoPago || '').toLowerCase();
     const nombres = pedido.items.map((item) => item.nombre.toLowerCase()).join(' ');
-    const categorias = pedido.items.map((item) => item.categoria.toLowerCase()).join(' ');
+    const categorias = pedido.items.map((item) => (item.categoria || '').toLowerCase()).join(' ');
 
     return (
       id.includes(valor) ||
@@ -212,8 +258,11 @@ function filtrarPedidos(texto) {
   }
 }
 
-function initPedidos() {
-  cargarPedidosDesdeStorage();
+async function initPedidos() {
+  const user = requireActiveUser();
+  if (!user) return;
+
+  await cargarPedidosDesdeAPI();
   renderLista(pedidosFiltrados);
 
   if (pedidosFiltrados.length > 0) {
