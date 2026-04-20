@@ -15,6 +15,8 @@ import Order from "./src/models/Order.js";
 
 import authRoutes from './src/back/routes/authRoutes.js';
 import userRoutes from './src/back/routes/userRoutes.js';
+import productRoutes from './src/back/routes/productRoutes.js';
+
 
 const app = express();
 
@@ -29,7 +31,7 @@ app.get("/", (req, res) => {
 ========================= */
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-
+app.use('/api/products', productRoutes);
 /* =========================
    TEST DB
 ========================= */
