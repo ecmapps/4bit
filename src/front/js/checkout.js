@@ -1,3 +1,5 @@
+import { getActiveUserId, requireActiveUser } from "./api-user.js";
+
 const checkoutItems = document.getElementById('checkout-items');
 const checkoutTotals = document.getElementById('checkout-totals');
 const checkoutForm = document.getElementById('checkout-form');
@@ -16,10 +18,22 @@ function obtenerPrecioFinal(producto) {
   return producto.precio_en_descuento ?? producto.precio ?? 0;
 }
 
-function cargarCarrito() {
+async function cargarCarrito() {
+  const userId = getActiveUserId();
+  if (!userId) {
+    carrito = [];
+    return;
+  }
+
   try {
-    const data = localStorage.getItem('4bit_cart');
-    carrito = data ? JSON.parse(data) : [];
+    const response = await fetch(`http://localhost:3000/api/cart/${userId}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Error cargando carrito");
+    }
+
+    carrito = data.cart?.items || [];
   } catch (error) {
     console.error('Error cargando carrito:', error);
     carrito = [];
@@ -30,22 +44,6 @@ function calcularSubtotal() {
   return carrito.reduce((acc, item) => {
     return acc + (obtenerPrecioFinal(item) * item.cantidad);
   }, 0);
-}
-
-function generarFechaActual() {
-  const fecha = new Date();
-  const dia = String(fecha.getDate()).padStart(2, '0');
-  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-  const anio = fecha.getFullYear();
-
-  return `${dia}/${mes}/${anio}`;
-}
-
-function generarPedidoId() {
-  const pedidosGuardados = JSON.parse(localStorage.getItem('4bit_orders')) || [];
-  return pedidosGuardados.length
-    ? Math.max(...pedidosGuardados.map(p => Number(p.id) || 0)) + 1
-    : 10234;
 }
 
 function renderItems() {
@@ -150,30 +148,6 @@ function renderCamposPago(metodo) {
   `;
 }
 
-function guardarPedido(metodoPago) {
-  const pedidosGuardados = JSON.parse(localStorage.getItem('4bit_orders')) || [];
-  const subtotal = calcularSubtotal();
-  const total = subtotal;
-
-  const nuevoPedido = {
-    id: generarPedidoId(),
-    fecha: generarFechaActual(),
-    estado: 'activo',
-    metodoPago,
-    items: carrito,
-    subtotal,
-    total
-  };
-
-  pedidosGuardados.unshift(nuevoPedido);
-  localStorage.setItem('4bit_orders', JSON.stringify(pedidosGuardados));
-}
-
-function vaciarCarrito() {
-  localStorage.removeItem('4bit_cart');
-  carrito = [];
-}
-
 function agregarEventosMetodoPago() {
   const radios = document.querySelectorAll('input[name="metodoPago"]');
 
@@ -185,10 +159,13 @@ function agregarEventosMetodoPago() {
 }
 
 function agregarEventoSubmit() {
-  if (!checkoutForm) return;
+  if (!checkoutForm || checkoutForm.dataset.eventsLoaded === "true") return;
 
-  checkoutForm.addEventListener('submit', (e) => {
+  checkoutForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    const user = requireActiveUser();
+    if (!user) return;
 
     if (!carrito.length) {
       alert('No hay productos en el carrito.');
@@ -198,16 +175,39 @@ function agregarEventoSubmit() {
     const metodoPagoSeleccionado =
       document.querySelector('input[name="metodoPago"]:checked')?.value || 'tarjeta';
 
-    guardarPedido(metodoPagoSeleccionado);
-    vaciarCarrito();
+    try {
+      const response = await fetch(`http://localhost:3000/api/orders/${user.id || user._id}/create-from-cart`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          metodoPago: metodoPagoSeleccionado
+        })
+      });
 
-    alert('Pago realizado correctamente.');
-    window.location.href = '/src/front/pages/pedidos.html';
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "No se pudo crear el pedido");
+      }
+
+      alert('Pago realizado correctamente.');
+      window.location.href = '/src/front/pages/pedidos.html';
+    } catch (error) {
+      console.error('Error guardando pedido:', error);
+      alert('No se pudo completar la compra.');
+    }
   });
+
+  checkoutForm.dataset.eventsLoaded = "true";
 }
 
-function initCheckout() {
-  cargarCarrito();
+async function initCheckout() {
+  const user = requireActiveUser();
+  if (!user) return;
+
+  await cargarCarrito();
   renderItems();
   renderTotales();
   renderCamposPago('tarjeta');

@@ -68,17 +68,18 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
   <script type="module">
-    import { abrirCarrito, initCarrito } from '/src/front/js/carrito.js';
-    import { Productos } from '/src/front/js/productos.js';
+    import { abrirCarrito, initCarrito, agregarProductoAlCarrito } from '/src/front/js/carrito.js';
+    import { ProductoPorId } from '/src/front/js/productos.js';
 
     const params = new URLSearchParams(window.location.search);
-    const id = parseInt(params.get('id'));
+    const id = params.get('id');
 
     window.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    initCarrito();
-  }, 100);
-});
+      setTimeout(() => {
+        initCarrito();
+      }, 100);
+    });
+
     let productoActual = null;
 
     function formatearCRC(valor) {
@@ -93,28 +94,14 @@
     }
 
     function agregarAlCarrito(producto, cantidad = 1) {
-      const carritoGuardado = JSON.parse(localStorage.getItem('4bit_cart')) || [];
-
-      const productoExistente = carritoGuardado.find(item => item.nombre === producto.nombre);
-
-      if (productoExistente) {
-        productoExistente.cantidad += cantidad;
-      } else {
-        carritoGuardado.push({
-          ...producto,
-          cantidad
-        });
-      }
-
-      localStorage.setItem('4bit_cart', JSON.stringify(carritoGuardado));
-      alert(`"${producto.nombre}" fue agregado al carrito.`);
-    }
+  agregarProductoAlCarrito(producto, cantidad);
+}
 
     async function cargarProducto() {
       try {
-        const data = await Productos();
+        const producto = await ProductoPorId(id);
 
-        if (!data || !data.productos || Number.isNaN(id) || id < 0 || id >= data.productos.length) {
+        if (!producto) {
           document.querySelector('.product-section').innerHTML = `
             <div class="alert alert-danger text-center">
               Producto no encontrado.
@@ -123,7 +110,6 @@
           return;
         }
 
-        const producto = data.productos[id];
         productoActual = producto;
 
         document.title = `4Bit - ${producto.nombre}`;
@@ -174,7 +160,7 @@
       const input = document.getElementById('qty');
       const val = parseInt(input.value || 1) + delta;
       if (val >= 1) input.value = val;
-    }
+    };
 
     document.querySelectorAll('.tab-link').forEach(link => {
       link.addEventListener('click', e => {
@@ -185,16 +171,16 @@
     });
 
     document.getElementById('btn-carrito')?.addEventListener('click', () => {
-  if (!productoActual) return;
+      if (!productoActual) return;
 
-  const cantidad = parseInt(document.getElementById('qty').value) || 1;
-  agregarAlCarrito(productoActual, cantidad);
+      const cantidad = parseInt(document.getElementById('qty').value) || 1;
+      agregarAlCarrito(productoActual, cantidad);
 
-  setTimeout(() => {
-    initCarrito();
-    abrirCarrito();
-  }, 50);
-});
+      setTimeout(() => {
+        initCarrito();
+        abrirCarrito();
+      }, 50);
+    });
 
     document.getElementById('btn-comprar')?.addEventListener('click', () => {
       if (!productoActual) return;
