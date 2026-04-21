@@ -127,7 +127,6 @@ export const createOrder = async (req, res) => {
 async function sendLicenseEmail(email, fullname, licenses, orderId) {
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
-    
     const licenseList = licenses
       .map(lic => `<li><strong>${lic.productName}</strong><br/>Código: <code style="background: #f0f0f0; padding: 5px;">${lic.licenseKey}</code></li>`)
       .join('');
@@ -146,13 +145,11 @@ async function sendLicenseEmail(email, fullname, licenses, orderId) {
     `;
 
     await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'noreply@4bit.com',
-      to: email,
+      from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+      to: 'ecarmiolf@ucenfotec.ac.cr',//(Cambiar a email en producción)
       subject: '🎉 Tus códigos de licencia - 4Bit',
       html: htmlContent
     });
-
-    console.log(`Email enviado a ${email}`);
   } catch (error) {
     console.error('Error al enviar email:', error);
   }
