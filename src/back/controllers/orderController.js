@@ -1,177 +1,118 @@
-import  Order  from '../models/Order.js';
-import  License  from '../models/License.js';
-import  Product  from '../models/Product.js';
-import  User  from '../models/User.js';
-import { Resend } from 'resend';
+import Order from '../models/Order.js';
+import Cart from '../models/Cart.js';
+import Product from '../models/Product.js';
 
 export const createOrder = async (req, res) => {
   try {
-    const resend = new Resend(process.env.RESEND_API_KEY);
-    const { userId, items, metodoPago, referenciaPago } = req.body;
+    const { user, items, total, metodoPago, referenciaPago = null, estado = 'pagado' } = req.body;
 
-    if (!userId || !items || items.length === 0 || !metodoPago) {
+    if (!user || !items || !items.length || !total || !metodoPago) {
       return res.status(400).json({
         ok: false,
-        message: "userId, items y metodoPago son obligatorios"
+        message: 'Faltan datos obligatorios para crear el pedido'
       });
     }
 
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({
-        ok: false,
-        message: "Usuario no encontrado"
-      });
-    }
-
-    let totalPrice = 0;
-    const processedItems = [];
-
-    for (const item of items) {
-      const product = await Product.findById(item.productId);
-      
-      if (!product) {
-        return res.status(404).json({
-          ok: false,
-          message: `Producto ${item.productId} no encontrado`
-        });
-      }
-
-      if (product.stock < item.quantity) {
-        return res.status(400).json({
-          ok: false,
-          message: `Stock insuficiente para ${product.nombre}`
-        });
-      }
-
-      const subtotal = product.precio * item.quantity;
-      totalPrice += subtotal;
-
-      processedItems.push({
-        nombre: product.nombre,
-        cantidad: item.quantity,
-        precioUnitario: product.precio,
-        subtotal: subtotal,
-        product: product._id
-      });
-    }
-
-    const newOrder = new Order({
-      user: userId,
-      items: processedItems,
-      total: totalPrice,
-      metodoPago: metodoPago,
-      referenciaPago: referenciaPago || null,
-      estado: "pagado"
+    const order = await Order.create({
+      user,
+      items,
+      total,
+      metodoPago,
+      referenciaPago,
+      estado
     });
-
-    const savedOrder = await newOrder.save();
-
-    const licensesGenerated = [];
-
-    for (const item of processedItems) {
-      const product = await Product.findById(item.product);
-      
-      if (product.tipo_licencia) {
-        for (let i = 0; i < item.cantidad; i++) {
-          const licenseKey = generateLicenseKey();
-          
-          const newLicense = new License({
-            product: product._id,
-            clave: licenseKey,
-            estado: "disponible",
-            order: savedOrder._id,
-            user: userId
-          });
-
-          await newLicense.save();
-          licensesGenerated.push({
-            productName: product.nombre,
-            licenseKey: licenseKey
-          });
-        }
-      }
-
-      await Product.findByIdAndUpdate(
-        product._id,
-        { stock: product.stock - item.cantidad },
-        { new: true }
-      );
-    }
-
-    if (licensesGenerated.length > 0) {
-      await sendLicenseEmail(user.email, user.fullname, licensesGenerated, savedOrder._id);
-    }
-
-    const populatedOrder = await Order.findById(savedOrder._id)
-      .populate('user', 'fullname email')
-      .populate('items.product', 'nombre precio');
 
     res.status(201).json({
       ok: true,
-      message: "Orden creada correctamente",
-      order: populatedOrder,
-      licenses: licensesGenerated
+      message: 'Pedido creado correctamente',
+      order
     });
-
   } catch (error) {
-    console.error('Error en createOrder:', error.message);
     res.status(500).json({
       ok: false,
-      message: "Error al crear orden",
+      message: 'Error creando pedido',
       error: error.message
     });
   }
 };
 
-async function sendLicenseEmail(email, fullname, licenses, orderId) {
+export const createOrderFromCart = async (req, res) => {
   try {
-    const resend = new Resend(process.env.RESEND_API_KEY);
-    
-    const licenseList = licenses
-      .map(lic => `<li><strong>${lic.productName}</strong><br/>Código: <code style="background: #f0f0f0; padding: 5px;">${lic.licenseKey}</code></li>`)
-      .join('');
+    const { userId } = req.params;
+    const { metodoPago, referenciaPago = null } = req.body;
 
-    const htmlContent = `
-      <h2>¡Gracias por tu compra, ${fullname}!</h2>
-      <p>Tu orden <strong>#${orderId}</strong> ha sido procesada correctamente.</p>
-      
-      <h3>Códigos de Activación:</h3>
-      <ul>
-        ${licenseList}
-      </ul>
-      
-      <p>Guarda estos códigos en un lugar seguro.</p>
-      <p>Saludos,<br/>El equipo de 4Bit</p>
-    `;
+    if (!metodoPago) {
+      return res.status(400).json({
+        ok: false,
+        message: 'metodoPago es obligatorio'
+      });
+    }
 
-    await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'noreply@4bit.com',
-      to: email,
-      subject: '🎉 Tus códigos de licencia - 4Bit',
-      html: htmlContent
+    const cart = await Cart.findOne({ user: userId }).populate({
+      path: 'items.product',
+      populate: {
+        path: 'categoria',
+        select: 'nombre slug'
+      }
     });
 
-    console.log(`Email enviado a ${email}`);
+    if (!cart || !cart.items.length) {
+      return res.status(400).json({
+        ok: false,
+        message: 'El carrito está vacío'
+      });
+    }
+
+    const itemsPedido = cart.items.map((item) => ({
+      product: item.product._id,
+      nombre: item.product.nombre,
+      cantidad: item.cantidad,
+      precioUnitario: item.precioUnitario,
+      subtotal: item.subtotal,
+      licencias: []
+    }));
+
+    const order = await Order.create({
+      user: userId,
+      items: itemsPedido,
+      total: cart.total,
+      metodoPago,
+      referenciaPago,
+      estado: 'pagado'
+    });
+
+    cart.items = [];
+    cart.total = 0;
+    await cart.save();
+
+    res.status(201).json({
+      ok: true,
+      message: 'Pedido creado correctamente',
+      order
+    });
   } catch (error) {
-    console.error('Error al enviar email:', error);
+    res.status(500).json({
+      ok: false,
+      message: 'Error creando pedido desde carrito',
+      error: error.message
+    });
   }
-}
+};
 
 export const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
       .populate('user', 'fullname email')
-      .populate('items.product', 'nombre precio');
+      .sort({ createdAt: -1 });
 
-    res.json({
+    res.status(200).json({
       ok: true,
-      orders: orders
+      orders
     });
   } catch (error) {
     res.status(500).json({
       ok: false,
-      message: "Error al obtener órdenes",
+      message: 'Error obteniendo pedidos',
       error: error.message
     });
   }
@@ -181,24 +122,41 @@ export const getOrdersByUser = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(400).json({
-        ok: false,
-        message: "ID de usuario inválido"
-      });
-    }
-
     const orders = await Order.find({ user: userId })
-      .populate('items.product', 'nombre precio');
+      .populate('items.product', 'nombre thumbnail imagen categoria precio precio_en_descuento')
+      .sort({ createdAt: -1 });
 
-    res.json({
+    const formattedOrders = orders.map((order) => ({
+      id: order._id,
+      fecha: new Date(order.createdAt).toLocaleDateString('es-CR'),
+      estado: order.estado,
+      metodoPago: order.metodoPago,
+      subtotal: order.total,
+      total: order.total,
+      items: order.items.map((item) => ({
+        _id: item.product?._id || item.product,
+        nombre: item.nombre,
+        cantidad: item.cantidad,
+        precio: item.precioUnitario,
+        precio_en_descuento: null,
+        subtotal: item.subtotal,
+        categoria:
+          typeof item.product?.categoria === 'object'
+            ? item.product?.categoria?.nombre || ''
+            : item.product?.categoria || '',
+        thumbnail: item.product?.thumbnail || '/assets/producto-default.png',
+        imagen: item.product?.imagen || '/assets/producto-default.png'
+      }))
+    }));
+
+    res.status(200).json({
       ok: true,
-      orders: orders
+      orders: formattedOrders
     });
   } catch (error) {
     res.status(500).json({
       ok: false,
-      message: "Error al obtener órdenes del usuario",
+      message: 'Error obteniendo pedidos del usuario',
       error: error.message
     });
   }
@@ -208,43 +166,26 @@ export const getOrderById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(400).json({
-        ok: false,
-        message: "ID de orden inválido"
-      });
-    }
-
     const order = await Order.findById(id)
       .populate('user', 'fullname email')
-      .populate('items.product', 'nombre precio');
+      .populate('items.product', 'nombre thumbnail imagen categoria precio precio_en_descuento');
 
     if (!order) {
       return res.status(404).json({
         ok: false,
-        message: "Orden no encontrada"
+        message: 'Pedido no encontrado'
       });
     }
 
-    res.json({
+    res.status(200).json({
       ok: true,
-      order: order
+      order
     });
   } catch (error) {
     res.status(500).json({
       ok: false,
-      message: "Error al obtener orden",
+      message: 'Error obteniendo pedido',
       error: error.message
     });
   }
 };
-
-function generateLicenseKey() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let key = '';
-  for (let i = 0; i < 20; i++) {
-    if (i > 0 && i % 5 === 0) key += '-';
-    key += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return key;
-}

@@ -16,7 +16,7 @@ function formatearCRC(valor) {
 }
 
 function obtenerPrecioFinal(producto) {
-  return producto.precio_en_descuento ?? producto.precio ?? 0;
+  return producto.precio_en_descuento ?? producto.precio ?? producto.precioUnitario ?? 0;
 }
 
 function obtenerClaseBadge(estado) {
@@ -125,7 +125,7 @@ function renderLista(lista) {
       </div>
 
       <div style="display:grid; gap:.5rem; justify-items:end;">
-        <span class="${claseBadge}">${pedido.estado.toUpperCase()}</span>
+        <span class="${claseBadge}">${String(pedido.estado).toUpperCase()}</span>
         <button class="btn-grad-secondary btn-sm" type="button">
           Ver Detalle
         </button>
@@ -158,7 +158,7 @@ function renderDetalle(pedido) {
       <div class="item">
         <div class="thumb">
           <img
-          |src="${obtenerImagenProducto(producto)}"
+            src="${obtenerImagenProducto(producto)}"
             alt="${producto.nombre}"
             loading="lazy"
             onerror="${getImageFallbackAttr()}"
@@ -188,7 +188,7 @@ function renderDetalle(pedido) {
 
     <div class="detail-meta">
       <span class="date">Fecha: ${pedido.fecha}</span>
-      <span class="${claseBadge}">${pedido.estado.toUpperCase()}</span>
+      <span class="${claseBadge}">${String(pedido.estado).toUpperCase()}</span>
     </div>
 
     <div class="steps">
@@ -238,10 +238,10 @@ function filtrarPedidos(texto) {
 
   pedidosFiltrados = pedidos.filter((pedido) => {
     const id = String(pedido.id).toLowerCase();
-    const fecha = pedido.fecha.toLowerCase();
-    const metodo = (pedido.metodoPago || '').toLowerCase();
+    const fecha = String(pedido.fecha || "").toLowerCase();
+    const metodo = String(pedido.metodoPago || '').toLowerCase();
     const nombres = pedido.items.map((item) => item.nombre.toLowerCase()).join(' ');
-    const categorias = pedido.items.map((item) => (item.categoria || '').toLowerCase()).join(' ');
+    const categorias = pedido.items.map((item) => String(item.categoria || '').toLowerCase()).join(' ');
 
     return (
       id.includes(valor) ||
