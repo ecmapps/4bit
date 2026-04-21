@@ -3,13 +3,14 @@ import Category from '../models/Category.js';
 
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find().populate('category');
+    const products = await Product.find().populate('categoria');
     
     res.json({
       ok: true,
       products: products
     });
   } catch (error) {
+    console.error('Error en getAllProducts:', error.message);
     res.status(500).json({
       ok: false,
       message: "Error al obtener productos",
@@ -29,7 +30,7 @@ export const getProductById = async (req, res) => {
       });
     }
 
-    const product = await Product.findById(id).populate('category');
+    const product = await Product.findById(id).populate('categoria');
 
     if (!product) {
       return res.status(404).json({
@@ -53,16 +54,16 @@ export const getProductById = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const { name, description, price, stock, category } = req.body;
+    const { nombre, slug, descripcion_breve, precio, categoria, sistema_operativo, año_de_lanzamiento, precio_en_descuento, thumbnail, imagen, tipo_licencia, duracion_meses, stock } = req.body;
 
-    if (!name || !price || !category) {
+    if (!nombre || !slug || !descripcion_breve || !precio || !categoria) {
       return res.status(400).json({
         ok: false,
-        message: "Nombre, precio y categoría son obligatorios"
+        message: "Nombre, slug, descripción, precio y categoría son obligatorios"
       });
     }
 
-    const categoryExists = await Category.findById(category);
+    const categoryExists = await Category.findById(categoria);
     if (!categoryExists) {
       return res.status(404).json({
         ok: false,
@@ -71,15 +72,24 @@ export const createProduct = async (req, res) => {
     }
 
     const newProduct = new Product({
-      name,
-      description,
-      price,
+      nombre,
+      slug,
+      descripcion_breve,
+      precio,
+      categoria,
+      sistema_operativo: sistema_operativo || [],
+      año_de_lanzamiento,
+      precio_en_descuento,
+      thumbnail,
+      imagen,
+      tipo_licencia,
+      duracion_meses,
       stock: stock || 0,
-      category
+      activo: true
     });
 
     const savedProduct = await newProduct.save();
-    await savedProduct.populate('category');
+    await savedProduct.populate('categoria');
 
     res.status(201).json({
       ok: true,
@@ -98,7 +108,7 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price, stock, category } = req.body;
+    const { nombre, slug, descripcion_breve, precio, categoria, sistema_operativo, año_de_lanzamiento, precio_en_descuento, thumbnail, imagen, tipo_licencia, duracion_meses, stock, activo } = req.body;
 
     if (!id.match(/^[0-9a-fA-F]{24}$/)) {
       return res.status(400).json({
@@ -108,22 +118,31 @@ export const updateProduct = async (req, res) => {
     }
 
     const updateData = {};
-    if (name) updateData.name = name;
-    if (description) updateData.description = description;
-    if (price) updateData.price = price;
-    if (stock !== undefined) updateData.stock = stock;
-    if (category) {
-      const categoryExists = await Category.findById(category);
+    if (nombre) updateData.nombre = nombre;
+    if (slug) updateData.slug = slug;
+    if (descripcion_breve) updateData.descripcion_breve = descripcion_breve;
+    if (precio) updateData.precio = precio;
+    if (categoria) {
+      const categoryExists = await Category.findById(categoria);
       if (!categoryExists) {
         return res.status(404).json({
           ok: false,
           message: "Categoría no encontrada"
         });
       }
-      updateData.category = category;
+      updateData.categoria = categoria;
     }
+    if (sistema_operativo) updateData.sistema_operativo = sistema_operativo;
+    if (año_de_lanzamiento) updateData.año_de_lanzamiento = año_de_lanzamiento;
+    if (precio_en_descuento) updateData.precio_en_descuento = precio_en_descuento;
+    if (thumbnail) updateData.thumbnail = thumbnail;
+    if (imagen) updateData.imagen = imagen;
+    if (tipo_licencia) updateData.tipo_licencia = tipo_licencia;
+    if (duracion_meses) updateData.duracion_meses = duracion_meses;
+    if (stock !== undefined) updateData.stock = stock;
+    if (activo !== undefined) updateData.activo = activo;
 
-    const product = await Product.findByIdAndUpdate(id, updateData, { new: true, runValidators: true }).populate('category');
+    const product = await Product.findByIdAndUpdate(id, updateData, { new: true, runValidators: true }).populate('categoria');
 
     if (!product) {
       return res.status(404).json({

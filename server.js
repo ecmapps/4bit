@@ -12,10 +12,12 @@ import Category from "./src/back/models/Category.js";
 import User from "./src/back/models/User.js";
 import Cart from "./src/back/models/Cart.js";
 import Order from "./src/back/models/Order.js";
+import License from "./src/back/models/License.js";
 
 import authRoutes from './src/back/routes/authRoutes.js';
 import userRoutes from './src/back/routes/userRoutes.js';
 import productRoutes from './src/back/routes/productRoutes.js';
+import orderRoutes from './src/back/routes/orderRoutes.js';
 
 
 const app = express();
@@ -32,6 +34,7 @@ app.get("/", (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
 /* =========================
    TEST DB
 ========================= */
