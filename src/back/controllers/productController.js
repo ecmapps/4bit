@@ -1,5 +1,5 @@
-import { Product } from '../models/Product.js';
-import { Category } from '../models/Category.js';
+import Product from '../models/Product.js';
+import Category from '../models/Category.js';
 
 export const getAllProducts = async (req, res) => {
   try {
