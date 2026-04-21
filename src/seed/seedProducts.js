@@ -6,8 +6,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { connectDB } from "../config/db.js";
-import Product from "../models/Product.js";
-import Category from "../models/Category.js";
+import Product from '../back/models/Product.js';
+import Category from "../back/models/Category.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -1,4 +1,5 @@
 import { getActiveUserId, requireActiveUser } from "./api-user.js";
+import { obtenerImagenProducto, getImageFallbackAttr } from "./images.js";
 
 const checkoutItems = document.getElementById('checkout-items');
 const checkoutTotals = document.getElementById('checkout-totals');
@@ -61,10 +62,10 @@ function renderItems() {
   checkoutItems.innerHTML = carrito.map(producto => `
     <div class="d-flex gap-3 align-items-center border rounded-3 p-2">
       <img
-        src="${producto.thumbnail || producto.imagen || '/assets/Logo_4bit.webp'}"
+      src="${obtenerImagenProducto(producto)}"
         alt="${producto.nombre}"
         style="width:70px; height:70px; object-fit:contain;"
-        onerror="this.onerror=null; this.src='/assets/Logo_4bit.webp';"
+        onerror="${getImageFallbackAttr()}"
       />
 
       <div class="flex-grow-1">

@@ -1,4 +1,5 @@
 import { getActiveUserId, requireActiveUser } from "./api-user.js";
+import { obtenerImagenProducto, getImageFallbackAttr } from "./images.js";
 
 const pedidosLista = document.getElementById('pedidos-lista');
 const pedidoDetail = document.getElementById('pedido-detail');
@@ -157,10 +158,10 @@ function renderDetalle(pedido) {
       <div class="item">
         <div class="thumb">
           <img
-            src="${producto.thumbnail || producto.imagen || '/assets/Logo_4bit.webp'}"
+          |src="${obtenerImagenProducto(producto)}"
             alt="${producto.nombre}"
             loading="lazy"
-            onerror="this.onerror=null; this.src='/assets/Logo_4bit.webp';"
+            onerror="${getImageFallbackAttr()}"
           />
         </div>
 
