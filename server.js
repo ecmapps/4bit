@@ -7,11 +7,11 @@ import cors from "cors";
 import bcrypt from "bcryptjs";
 
 import { connectDB } from "./src/config/db.js";
-import Product from "./src/models/Product.js";
-import Category from "./src/models/Category.js";
-import User from "./src/models/User.js";
-import Cart from "./src/models/Cart.js";
-import Order from "./src/models/Order.js";
+import Product from "./src/back/models/Product.js";
+import Category from "./src/back/models/Category.js";
+import User from "./src/back/models/User.js";
+import Cart from "./src/back/models/Cart.js";
+import Order from "./src/back/models/Order.js";
 
 import authRoutes from './src/back/routes/authRoutes.js';
 import userRoutes from './src/back/routes/userRoutes.js';
