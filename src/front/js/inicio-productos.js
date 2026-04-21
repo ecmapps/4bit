@@ -1,4 +1,5 @@
 import { Productos } from './productos.js';
+import { agregarProductoAlCarrito } from './carrito.js';
 
 const filtrosCategorias = document.getElementById('filtros-categorias');
 const filtrosPlataformas = document.getElementById('filtros-plataformas');
@@ -25,21 +26,14 @@ function obtenerPrecioFinal(producto) {
   return producto.precio_en_descuento ?? producto.precio;
 }
 
-function agregarAlCarrito(producto) {
-  const carritoGuardado = JSON.parse(localStorage.getItem('4bit_cart')) || [];
-  const existente = carritoGuardado.find(item => item.nombre === producto.nombre);
+function obtenerCategoriaTexto(producto) {
+  return typeof producto.categoria === "object"
+    ? producto.categoria?.nombre || ""
+    : producto.categoria || "";
+}
 
-  if (existente) {
-    existente.cantidad += 1;
-  } else {
-    carritoGuardado.push({
-      ...producto,
-      cantidad: 1
-    });
-  }
-
-  localStorage.setItem('4bit_cart', JSON.stringify(carritoGuardado));
-  alert(`"${producto.nombre}" fue agregado al carrito.`);
+async function agregarAlCarrito(producto) {
+  await agregarProductoAlCarrito(producto, 1);
 }
 
 function renderDetalleProducto(producto) {
@@ -51,15 +45,17 @@ function renderDetalleProducto(producto) {
     producto.precio_en_descuento !== null &&
     producto.precio_en_descuento !== undefined;
 
+  const categoriaTexto = obtenerCategoriaTexto(producto);
+
   modalBody.innerHTML = `
     <div class="row g-4 align-items-center">
       <div class="col-md-5 text-center">
         <img
-          src="${producto.thumbnail || producto.imagen || '/assets/Logo_4bit.webp'}"
+          src="${producto.thumbnail || producto.imagen || '/assets/producto-default.png'}"
           alt="${producto.nombre}"
           class="img-fluid"
           style="max-height: 260px; object-fit: contain;"
-          onerror="this.onerror=null; this.src='/assets/Logo_4bit.webp';"
+          onerror="this.onerror=null; this.src='/assets/producto-default.png';"
         >
       </div>
 
@@ -67,7 +63,7 @@ function renderDetalleProducto(producto) {
         <h3 class="fw-bold mb-3">${producto.nombre}</h3>
 
         <p class="mb-2">
-          <span class="badge text-bg-dark">${producto.categoria}</span>
+          <span class="badge text-bg-dark">${categoriaTexto}</span>
         </p>
 
         <p class="text-muted mb-3">
@@ -114,8 +110,8 @@ function renderDetalleProducto(producto) {
 
   const btnAgregarDetalle = document.getElementById('btn-agregar-detalle');
   if (btnAgregarDetalle) {
-    btnAgregarDetalle.addEventListener('click', () => {
-      agregarAlCarrito(producto);
+    btnAgregarDetalle.addEventListener('click', async () => {
+      await agregarAlCarrito(producto);
     });
   }
 }
@@ -142,15 +138,17 @@ function renderProductos(lista) {
       producto.precio_en_descuento !== null &&
       producto.precio_en_descuento !== undefined;
 
+    const categoriaTexto = obtenerCategoriaTexto(producto);
+
     return `
       <article class="producto-carousel-card">
         <div class="producto-carousel-card__top">
           <img
-            src="${producto.thumbnail || producto.imagen || '/assets/Logo_4bit.webp'}"
+            src="${producto.thumbnail || producto.imagen || '/assets/producto-default.png'}"
             class="producto-carousel-card__img"
             alt="${producto.nombre}"
             loading="lazy"
-            onerror="this.onerror=null; this.src='/assets/Logo_4bit.webp';"
+            onerror="this.onerror=null; this.src='/assets/producto-default.png';"
           >
 
           <div class="producto-carousel-card__body">
@@ -161,7 +159,7 @@ function renderProductos(lista) {
             </p>
 
             <p class="mb-2">
-              <span class="badge text-bg-dark">${producto.categoria}</span>
+              <span class="badge text-bg-dark">${categoriaTexto}</span>
             </p>
 
             <p class="producto-carousel-card__platforms">
@@ -215,8 +213,10 @@ function renderProductos(lista) {
 
 function aplicarFiltros() {
   productosFiltrados = productos.filter(producto => {
+    const categoriaTexto = obtenerCategoriaTexto(producto);
+
     const coincideCategoria =
-      categoriaActiva === 'Todas' || producto.categoria === categoriaActiva;
+      categoriaActiva === 'Todas' || categoriaTexto === categoriaActiva;
 
     const plataformas = Array.isArray(producto.sistema_operativo)
       ? producto.sistema_operativo
@@ -229,7 +229,7 @@ function aplicarFiltros() {
 
     const coincideBusqueda =
       producto.nombre.toLowerCase().includes(busqueda) ||
-      producto.categoria.toLowerCase().includes(busqueda) ||
+      categoriaTexto.toLowerCase().includes(busqueda) ||
       producto.descripcion_breve.toLowerCase().includes(busqueda);
 
     return coincideCategoria && coincidePlataforma && coincideBusqueda;
@@ -241,7 +241,10 @@ function aplicarFiltros() {
 function renderFiltrosCategorias() {
   if (!filtrosCategorias) return;
 
-  const categorias = ['Todas', ...new Set(productos.map(p => p.categoria))];
+  const categorias = [
+    'Todas',
+    ...new Set(productos.map(p => obtenerCategoriaTexto(p)))
+  ].filter(Boolean);
 
   filtrosCategorias.innerHTML = categorias.map(categoria => `
     <div class="col-auto">

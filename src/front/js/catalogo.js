@@ -1,5 +1,6 @@
 import { Productos } from './productos.js';
 import { agregarProductoAlCarrito } from './carrito.js';
+import { obtenerImagenProducto, getImageFallbackAttr } from './images.js';
 
 const catalogoDiv = document.getElementById('catalogo');
 const categoriasDiv = document.getElementById('categorias');
@@ -155,11 +156,11 @@ function renderizarCatalogo(lista) {
       <div class="catalogo-item">
         <div class="card h-100 shadow p-2">
           <img
-            src="${producto.thumbnail || producto.imagen || '/assets/Logo_4bit.webp'}"
+            src="${obtenerImagenProducto(producto)}"
             class="card-img-top rounded align-self-center"
             alt="${producto.nombre}"
             loading="lazy"
-            onerror="this.onerror=null; this.src='/assets/Logo_4bit.webp';"
+            onerror="${getImageFallbackAttr()}"
           >
 
           <div class="card-body justify-content-start d-flex flex-column">

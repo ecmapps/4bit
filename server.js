@@ -4,37 +4,36 @@ dotenv.config();
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import bcrypt from "bcryptjs";
 
 import { connectDB } from "./src/config/db.js";
 import Product from "./src/back/models/Product.js";
 import Category from "./src/back/models/Category.js";
-import User from "./src/back/models/User.js";
 import Cart from "./src/back/models/Cart.js";
 import Order from "./src/back/models/Order.js";
-import License from "./src/back/models/License.js";
 
-import authRoutes from './src/back/routes/authRoutes.js';
-import userRoutes from './src/back/routes/userRoutes.js';
-import productRoutes from './src/back/routes/productRoutes.js';
-import orderRoutes from './src/back/routes/orderRoutes.js';
-
+import authRoutes from "./src/back/routes/authRoutes.js";
+import userRoutes from "./src/back/routes/userRoutes.js";
+import productRoutes from "./src/back/routes/productRoutes.js";
+import orderRoutes from "./src/back/routes/orderRoutes.js";
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use("/assets", express.static("assets"));
 
 app.get("/", (req, res) => {
   res.send("API funcionando");
 });
+
 /* =========================
    ROUTES
 ========================= */
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/orders', orderRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
+
 /* =========================
    TEST DB
 ========================= */
@@ -116,8 +115,8 @@ app.get("/test-insert-product", async (req, res) => {
         año_de_lanzamiento: 2025,
         precio: 1000,
         precio_en_descuento: 900,
-        thumbnail: "test-thumb.png",
-        imagen: "test-img.png",
+        thumbnail: "/assets/producto-default.png",
+        imagen: "/assets/producto-default.png",
         tipo_licencia: "perpetua",
         stock: 10,
         activo: true
@@ -156,188 +155,6 @@ app.get("/collections", async (req, res) => {
     res.status(500).json({
       ok: false,
       message: "Error obteniendo colecciones",
-      error: error.message
-    });
-  }
-});
-
-/* =========================
-   AUTH - REGISTER
-========================= */
-// app.post("/api/auth/register", async (req, res) => {
-//   try {
-//     const { fullname, email, password } = req.body;
-
-//     if (!fullname || !email || !password) {
-//       return res.status(400).json({
-//         ok: false,
-//         message: "Todos los campos son obligatorios"
-//       });
-//     }
-
-//     const existingUser = await User.findOne({ email: email.toLowerCase() });
-
-//     if (existingUser) {
-//       return res.status(409).json({
-//         ok: false,
-//         message: "El usuario ya existe"
-//       });
-//     }
-
-//     const hashedPassword = await bcrypt.hash(password, 10);
-
-//     const user = await User.create({
-//       fullname,
-//       email: email.toLowerCase(),
-//       password: hashedPassword
-//     });
-
-//     res.status(201).json({
-//       ok: true,
-//       message: "Usuario registrado correctamente",
-//       user: {
-//         id: user._id,
-//         fullname: user.fullname,
-//         email: user.email,
-//         role: user.role
-//       }
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       ok: false,
-//       message: "Error registrando usuario",
-//       error: error.message
-//     });
-//   }
-// });
-
-// /* =========================
-//    AUTH - LOGIN
-// ========================= */
-// app.post("/api/auth/login", async (req, res) => {
-//   try {
-//     const { email, password } = req.body;
-
-//     if (!email || !password) {
-//       return res.status(400).json({
-//         ok: false,
-//         message: "Email y contraseña son obligatorios"
-//       });
-//     }
-
-//     const user = await User.findOne({ email: email.toLowerCase() });
-
-//     if (!user) {
-//       return res.status(404).json({
-//         ok: false,
-//         message: "Usuario no encontrado"
-//       });
-//     }
-
-//     const isMatch = await bcrypt.compare(password, user.password);
-
-//     if (!isMatch) {
-//       return res.status(401).json({
-//         ok: false,
-//         message: "Contraseña incorrecta"
-//       });
-//     }
-
-//     res.status(200).json({
-//       ok: true,
-//       message: "Inicio de sesión exitoso",
-//       user: {
-//         id: user._id,
-//         fullname: user.fullname,
-//         email: user.email,
-//         role: user.role
-//       }
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       ok: false,
-//       message: "Error iniciando sesión",
-//       error: error.message
-//     });
-//   }
-// });
-
-/* =========================
-   PRODUCTS API
-========================= */
-app.get("/api/products", async (req, res) => {
-  try {
-    const products = await Product.find({ activo: true })
-      .populate("categoria", "nombre slug")
-      .sort({ nombre: 1 });
-
-    const formattedProducts = products.map((product) => ({
-      _id: product._id,
-      nombre: product.nombre,
-      slug: product.slug,
-      descripcion_breve: product.descripcion_breve,
-      sistema_operativo: product.sistema_operativo,
-      categoria: product.categoria?.nombre || "",
-      categoria_id: product.categoria?._id || null,
-      año_de_lanzamiento: product.año_de_lanzamiento,
-      precio: product.precio,
-      precio_en_descuento: product.precio_en_descuento,
-      thumbnail: product.thumbnail,
-      imagen: product.imagen,
-      tipo_licencia: product.tipo_licencia,
-      stock: product.stock,
-      activo: product.activo
-    }));
-
-    res.status(200).json({
-      ok: true,
-      products: formattedProducts
-    });
-  } catch (error) {
-    res.status(500).json({
-      ok: false,
-      message: "Error obteniendo productos",
-      error: error.message
-    });
-  }
-});
-
-app.get("/api/products/:id", async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id)
-      .populate("categoria", "nombre slug");
-
-    if (!product) {
-      return res.status(404).json({
-        ok: false,
-        message: "Producto no encontrado"
-      });
-    }
-
-    res.status(200).json({
-      ok: true,
-      product: {
-        _id: product._id,
-        nombre: product.nombre,
-        slug: product.slug,
-        descripcion_breve: product.descripcion_breve,
-        sistema_operativo: product.sistema_operativo,
-        categoria: product.categoria?.nombre || "",
-        categoria_id: product.categoria?._id || null,
-        año_de_lanzamiento: product.año_de_lanzamiento,
-        precio: product.precio,
-        precio_en_descuento: product.precio_en_descuento,
-        thumbnail: product.thumbnail,
-        imagen: product.imagen,
-        tipo_licencia: product.tipo_licencia,
-        stock: product.stock,
-        activo: product.activo
-      }
-    });
-  } catch (error) {
-    res.status(500).json({
-      ok: false,
-      message: "Error obteniendo producto",
       error: error.message
     });
   }
@@ -657,8 +474,7 @@ app.get("/api/orders/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const orders = await Order.find({ user: userId })
-      .sort({ createdAt: -1 });
+    const orders = await Order.find({ user: userId }).sort({ createdAt: -1 });
 
     const formattedOrders = orders.map((order) => ({
       id: order._id,
@@ -675,8 +491,8 @@ app.get("/api/orders/:userId", async (req, res) => {
         precio_en_descuento: null,
         subtotal: item.subtotal,
         categoria: "",
-        thumbnail: "/assets/Logo_4bit.webp",
-        imagen: "/assets/Logo_4bit.webp"
+        thumbnail: "/assets/producto-default.png",
+        imagen: "/assets/producto-default.png"
       }))
     }));
 
@@ -692,7 +508,6 @@ app.get("/api/orders/:userId", async (req, res) => {
     });
   }
 });
-
 
 const PORT = process.env.PORT || 3000;
 

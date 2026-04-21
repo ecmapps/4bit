@@ -28,6 +28,7 @@
     "sass": "^1.99.0"
   },
   "dependencies": {
+    "axios": "^1.15.2",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
     "chokidar": "^4.0.3",
@@ -43,6 +44,7 @@
     "node-addon-api": "^7.1.1",
     "picomatch": "^4.0.4",
     "readdirp": "^4.1.2",
+    "resend": "^6.12.2",
     "source-map-js": "^1.2.1"
   }
 }

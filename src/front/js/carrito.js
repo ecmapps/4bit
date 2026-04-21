@@ -1,4 +1,5 @@
 import { getActiveUserId, requireActiveUser } from "./api-user.js";
+import { obtenerImagenProducto, getImageFallbackAttr } from "./images.js";
 
 let carrito = [];
 
@@ -166,10 +167,10 @@ async function renderCarrito() {
     <article class="cart-item">
       <div class="thumb">
         <img
-          src="${producto.thumbnail || producto.imagen || '/assets/Logo_4bit.webp'}"
+        src="${obtenerImagenProducto(producto)}"
           alt="${producto.nombre}"
           loading="lazy"
-          onerror="this.onerror=null; this.src='/assets/Logo_4bit.webp';"
+          onerror="${getImageFallbackAttr()}"
         />
       </div>
 
