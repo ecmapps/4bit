@@ -113,8 +113,10 @@ export const createOrder = async (req, res) => {
       order: populatedOrder,
       licenses: licensesGenerated
     });
+    console.log('request body existoso:', req.body);
 
   } catch (error) {
+    console.log('request body fallido:', req.body);
     console.error('Error en createOrder:', error.message);
     res.status(500).json({
       ok: false,

@@ -175,14 +175,21 @@ function agregarEventoSubmit() {
 
     const metodoPagoSeleccionado =
       document.querySelector('input[name="metodoPago"]:checked')?.value || 'tarjeta';
-
+      console.log('user id en checkout:', getActiveUserId());
+      let items = carrito.map(item => ({
+        productId: item._id,
+        quantity: item.cantidad
+      }));
+      console.log('items a enviar en checkout:', items);
     try {
-      const response = await fetch(`http://localhost:3000/api/orders/${user.id || user._id}/create-from-cart`, {
+      const response = await fetch('http://localhost:3000/api/orders', {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
+          userId: getActiveUserId(),
+          items: items,
           metodoPago: metodoPagoSeleccionado
         })
       });

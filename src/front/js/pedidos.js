@@ -16,7 +16,7 @@ function formatearCRC(valor) {
 }
 
 function obtenerPrecioFinal(producto) {
-  return producto.precio_en_descuento ?? producto.precio ?? 0;
+  return producto.precio_en_descuento ?? producto.precioUnitario ?? 0;
 }
 
 function obtenerClaseBadge(estado) {
@@ -33,7 +33,7 @@ async function cargarPedidosDesdeAPI() {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/api/orders/${userId}`);
+    const response = await fetch(`http://localhost:3000/api/orders/user/${userId}`);
     const data = await response.json();
 
     if (!response.ok) {
@@ -111,15 +111,14 @@ function renderLista(lista) {
 
   lista.forEach((pedido, index) => {
     const claseBadge = obtenerClaseBadge(pedido.estado);
-
     const card = document.createElement('article');
     card.className = 'pedido-card';
 
     card.innerHTML = `
       <div>
-        <div class="pedido-id">Pedido #${pedido.id}</div>
+        <div class="pedido-id">Pedido #${pedido._id.slice(-6)}</div>
         <div class="meta">
-          Fecha: ${pedido.fecha}<br />
+          Fecha: ${new Date(pedido.createdAt).toLocaleDateString('es-ES')}<br />
           Total: ${formatearCRC(pedido.total)}
         </div>
       </div>
@@ -183,11 +182,11 @@ function renderDetalle(pedido) {
 
   pedidoDetail.innerHTML = `
     <div class="header">
-      <h2>Pedido #${pedido.id}</h2>
+      <h2>Pedido #${pedido._id}</h2>
     </div>
 
     <div class="detail-meta">
-      <span class="date">Fecha: ${pedido.fecha}</span>
+      <span class="date">Fecha: ${new Date(pedido.createdAt).toLocaleDateString('es-ES')}</span>
       <span class="${claseBadge}">${pedido.estado.toUpperCase()}</span>
     </div>
 
@@ -218,7 +217,7 @@ function renderDetalle(pedido) {
       <div class="totals">
         <div class="row">
           <span>Subtotal</span>
-          <span>${formatearCRC(pedido.subtotal)}</span>
+          <span>${formatearCRC(pedido.total)}</span>
         </div>
         <div class="row muted">
           <span>Envío</span>
